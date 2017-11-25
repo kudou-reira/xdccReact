@@ -1,3 +1,6 @@
+
+# React Front End for https://github.com/kudou-reira/xdcc2
+
 electron-react-redux-boilerplate fork tailored for personal preference
 
 # electron-react-redux-boilerplate
