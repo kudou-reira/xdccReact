@@ -38,7 +38,7 @@ class SearchPanel extends Component {
 		      />
 				</div>
 				<div>
-					<SuggestionResults results={this.props.search.queried} />
+					<SuggestionResults suggestions={this.props.search.queried} />
 				</div>
 			</div>
 		)
