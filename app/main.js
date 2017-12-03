@@ -143,7 +143,6 @@ ipcMain.on('videos:added', (event, videos) => {
 });
 
 
-
 ipcMain.on('fetch:suggestions', (e, suggestion) => {
   console.log("entered query in front end", suggestion);
   // can always try using request module for node
@@ -158,7 +157,7 @@ ipcMain.on('fetch:suggestions', (e, suggestion) => {
 async function fetchSuggestions(suggestion) {
   const res = await axios.get('http://localhost:8080/xdccTempSearch', {
     params: {
-      suggestion: 'gamers'
+      suggestion
     }
   });
   return res.data;
