@@ -37,7 +37,7 @@ class SearchPanel extends Component {
 					this is the searchPanel
 				</div>
 				<div>
-					<Debounce time="400" handler="onChange">
+					<Debounce time="550" handler="onChange">
 						<TextField
 		         	hintText="Enter title here"
 			        floatingLabelText="Searching anime..."

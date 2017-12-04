@@ -75,10 +75,19 @@ class SuggestionResults extends Component {
 				});
   		}
   		
-  		else if (this.props.suggestions.tempSearches === null) {
+  		else if (this.props.suggestions.tempErrors.Error) {
   			listSuggests = (
   				<div>
-	  				Nothing matched your searches
+	  				{this.props.suggestions.tempErrors.ErrorMessage}
+	  				Nothing matched your search query
+	  			</div>
+  			);
+	  	}
+
+	  	else {
+	  		listSuggests = (
+  				<div>
+	  				Nothing matched your search query
 	  			</div>
   			);
 	  	}
