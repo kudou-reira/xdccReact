@@ -31,9 +31,13 @@ class SearchPanel extends Component {
 
 	renderButton() {
 		if(this.props.search.queried !== null) {
-			return(
-				<RaisedButton label="Search" style={{marginTop: 5.5, marginRight: 5, marginLeft: 5}} />
-			);
+			if(this.props.search.queried.tempSearches !== null) {
+				if(this.props.search.queried.tempSearches[0].Compilation !== null) {
+					return(
+						<RaisedButton label="Search" style={{marginTop: 5.5, marginRight: 5, marginLeft: 15}} />
+					);
+				}
+			}
 		}
 	}
 

@@ -54,25 +54,41 @@ class SuggestionResults extends Component {
 
   generateListSuggestion() {
   	var listSuggests;
+  	var qualityError;
   	if(this.props.suggestions !== null) {
   		// add listitems into the renderlist suggestion stuff down below
   		if(this.props.suggestions.tempSearches !== null) {
   			listSuggests = this.props.suggestions.tempSearches.map((singleEpisode) => {
-  				return singleEpisode.Compilation.map((suggest, index) => {
-	  				return(
-		          <ListItem
-		            key={index}
-		            rightIconButton={
-									<RaisedButton label="Search" style={{marginTop: 5.5, marginRight: 5}} />
-					      }
-		            primaryText={suggest.Suggestion}
-		            primaryTogglesNestedList={true}
-		            onNestedListToggle={this.handleNestedListToggle}
-		            nestedItems={this.generateListContent(suggest.SuggestionContent)}
-		          />
-						)
-  				});
+  				if (singleEpisode.Compilation !== null) {
+  					return singleEpisode.Compilation.map((suggest, index) => {
+		  				return(
+			          <ListItem
+			            key={index}
+			            rightIconButton={
+										<RaisedButton label="Search" style={{marginTop: 5.5, marginRight: 5}} />
+						      }
+			            primaryText={suggest.Suggestion}
+			            primaryTogglesNestedList={true}
+			            onNestedListToggle={this.handleNestedListToggle}
+			            nestedItems={this.generateListContent(suggest.SuggestionContent)}
+			          />
+							)
+	  				});
+  				}
+
+  				else {
+  					qualityError = true
+  				}
+  				
   			});
+
+  			if (qualityError === true) {
+  				return(
+						<div>
+			  			Your episode quality doesn't exist!
+		  			</div>
+					);
+  			}
   		}
   		
   		else if (this.props.suggestions.tempErrors.Error) {
