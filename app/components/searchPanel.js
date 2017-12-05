@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import SuggestionResults from './suggestionResults';
 import TextField from 'material-ui/TextField';
+import RaisedButton from 'material-ui/RaisedButton';
 import { connect } from 'react-redux';
 import { Debounce } from 'react-throttle';
 import * as actions from '../actions';
@@ -28,6 +29,14 @@ class SearchPanel extends Component {
 		}
 	}
 
+	renderButton() {
+		if(this.props.search.queried !== null) {
+			return(
+				<RaisedButton label="Search" style={{marginTop: 5.5, marginRight: 5, marginLeft: 5}} />
+			);
+		}
+	}
+
 	render(){
 		console.log("these are the results of the search query to go backend", this.props.search);
 
@@ -44,6 +53,7 @@ class SearchPanel extends Component {
 			        onChange={this.onTextChange}
 			      />
 		      </Debounce>
+		      {this.renderButton()}
 				</div>
 				<div>
 					<SuggestionResults suggestions={this.props.search.queried} />

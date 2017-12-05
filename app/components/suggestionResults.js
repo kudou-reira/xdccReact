@@ -57,29 +57,33 @@ class SuggestionResults extends Component {
   	if(this.props.suggestions !== null) {
   		// add listitems into the renderlist suggestion stuff down below
   		if(this.props.suggestions.tempSearches !== null) {
-  			listSuggests = this.props.suggestions.tempSearches.map((suggest, index) => {
-  			// create the array of nested items here
-  			// it will be the content from go backend
-					return(
-	          <ListItem
-	            key={index}
-	            rightIconButton={
-								<RaisedButton label="Search" style={{marginTop: 5.5, marginRight: 5}} />
-				      }
-	            primaryText={suggest.Suggestion}
-	            primaryTogglesNestedList={true}
-	            onNestedListToggle={this.handleNestedListToggle}
-	            nestedItems={this.generateListContent(suggest.SuggestionContent)}
-	          />
-					)
-				});
+  			listSuggests = this.props.suggestions.tempSearches.map((singleEpisode) => {
+  				return singleEpisode.Compilation.map((suggest, index) => {
+	  				return(
+		          <ListItem
+		            key={index}
+		            rightIconButton={
+									<RaisedButton label="Search" style={{marginTop: 5.5, marginRight: 5}} />
+					      }
+		            primaryText={suggest.Suggestion}
+		            primaryTogglesNestedList={true}
+		            onNestedListToggle={this.handleNestedListToggle}
+		            nestedItems={this.generateListContent(suggest.SuggestionContent)}
+		          />
+						)
+  				});
+  			});
   		}
   		
   		else if (this.props.suggestions.tempErrors.Error) {
   			listSuggests = (
   				<div>
-	  				{this.props.suggestions.tempErrors.ErrorMessage}
-	  				Nothing matched your search query
+	  				<div>
+		  				{this.props.suggestions.tempErrors.ErrorMessage}
+		  			</div>
+		  			<div>
+		  				Nothing matched your search query
+		  			</div>
 	  			</div>
   			);
 	  	}
@@ -135,7 +139,6 @@ class SuggestionResults extends Component {
   renderListSuggestion() {
   	if(this.props.suggestions !== null) {
   		console.log("this is suggestions", this.props.suggestions);
-  		console.log("this is state search", this.state.searches);
   		return(
 	  		<div>
 	        <br />
