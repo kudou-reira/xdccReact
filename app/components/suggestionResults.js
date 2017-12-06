@@ -152,6 +152,50 @@ class SuggestionResults extends Component {
   	);
   }
 
+  renderValid() {
+  	var validQuery = false;
+  	var validSuggest;
+
+		if(this.props.suggestions !== null) {
+  		// add listitems into the renderlist suggestion stuff down below
+  		if(this.props.suggestions.tempSearches !== null) {
+  			validSuggest = this.props.suggestions.tempSearches.map((singleEpisode) => {
+  				if (singleEpisode.Compilation !== null) {
+  					validQuery = true
+  				}
+  			});
+  		}
+
+	  	else {
+				validQuery = false
+	  	}
+  	}
+
+  	if (validQuery === true) {
+  		return(
+  			<div>
+  				This is a valid request
+  			</div>
+  		);
+  	}
+
+  	else if (validQuery === false && this.props.currentQuery.length >= 3) {
+  		return(
+  			<div>
+  				This is not a valid request
+  			</div>
+  		);
+  	}
+
+  	else {
+  		return(
+  			<div>
+  				Please enter a query
+  			</div>
+  		);
+  	}
+  }
+
   renderListSuggestion() {
   	if(this.props.suggestions !== null) {
   		console.log("this is suggestions", this.props.suggestions);
@@ -177,6 +221,7 @@ class SuggestionResults extends Component {
 
 		return(
 			<div>
+				{this.renderValid()}
 				"this is the suggestion results window"
         {this.renderListSuggestion()}
 			</div>

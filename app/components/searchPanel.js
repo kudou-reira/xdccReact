@@ -60,7 +60,7 @@ class SearchPanel extends Component {
 		      {this.renderButton()}
 				</div>
 				<div>
-					<SuggestionResults suggestions={this.props.search.queried} />
+					<SuggestionResults suggestions={this.props.search.queried} currentQuery={this.state.searchTitle} />
 				</div>
 			</div>
 		)
