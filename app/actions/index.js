@@ -1,5 +1,5 @@
 import { ipcRenderer }  from 'electron';
-import { FETCH_SUGGESTIONS } from "./types";
+import { FETCH_SUGGESTIONS, UPDATE_TEMP_QUEUE, DELETE_TEMP_QUEUE } from "./types";
 
 // TODO: Communicate to MainWindow process that videos
 // have been added and are pending conversion
@@ -24,6 +24,20 @@ export const fetchSuggestions = tempTitle => dispatch => {
     });
   });
 };
+
+export const updateTempQueue = (queue) => {
+  return({
+    type: UPDATE_TEMP_QUEUE,
+    payload: queue
+  });
+}
+
+export const deleteTempQueue = (item) => {
+  return({
+    type: DELETE_TEMP_QUEUE,
+    payload: item
+  });
+}
 
 
 // TODO: Communicate to MainWindow that the user wants

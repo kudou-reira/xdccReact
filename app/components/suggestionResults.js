@@ -2,18 +2,25 @@ import React, { Component } from 'react';
 import {List, ListItem} from 'material-ui/List';
 import Subheader from 'material-ui/Subheader';
 import RaisedButton from 'material-ui/RaisedButton';
+import { connect } from 'react-redux';
+import _ from 'lodash';
+import * as actions from '../actions';
+
 
 class SuggestionResults extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			searchSuggestions: [],
+			botSearch: [],
 			open: false
 		}
 
 		this.handleToggle = this.handleToggle.bind(this);
 		this.handleNestedListToggle = this.handleNestedListToggle.bind(this);
 		this.handleListItemClick = this.handleListItemClick.bind(this);
+		this.addButtonClicked = this.addButtonClicked.bind(this);
+		this.searchButtonClicked = this.searchButtonClicked.bind(this);
 	}
 
 	// componentWillReceiveProps(nextProps){
@@ -44,11 +51,55 @@ class SuggestionResults extends Component {
     });
   };
 
-  renderButton() {
+  addButtonClicked(suggestion) {
+  	// they're in array format
+  	var tempArr = [];
+  	tempArr.push(suggestion);
+  	if (this.props.tempQueue.stack === null) {
+  		this.props.updateTempQueue(tempArr, () => {
+  			console.log("this is suggestion results tempqueue", this.props.tempQueue.stack);
+  		});	
+  	}
+
+  	else {
+  		// get the redux store and append the new value if it's not in it
+  		var tempSuggestions = this.props.tempQueue.stack;
+  		if(!_.includes(tempSuggestions, suggestion)) {
+  			tempArr = tempSuggestions;
+  			tempArr.push(suggestion);
+  		  this.props.updateTempQueue(tempArr, () => {
+  		  	console.log("this is suggestion results tempqueue", this.props.tempQueue.stack);
+  		  });
+  		}
+  	}
+  	
+  }
+
+  searchButtonClicked(suggestion) {
+
+  	// CLEAR THE BOTSEARCHED FIRST IF USING THIS METHOD
+  	console.log("this is the suggestion", suggestion);
+  	this.setState({
+  		botSearch: suggestion
+  	}, () => {
+  		console.log("this is single search", this.state.botSearch);
+  	});
+  }
+
+  renderIconButtons(suggest) {
   	return(
   		<div>
-  			Click me
-  		</div>
+  			<RaisedButton 
+		  		label="Add to queue" 
+		  		style={{marginTop: 5.5, marginRight: 5}}
+		  		onClick={() => this.addButtonClicked(suggest)} 
+		  	/>
+		    <RaisedButton 
+		  		label="Individual Search" 
+		  		style={{marginTop: 5.5, marginRight: 5}}
+		  		onClick={() => this.searchButtonClicked(suggest)} 
+		  	/>
+	  	</div>
   	);
   }
 
@@ -65,8 +116,8 @@ class SuggestionResults extends Component {
 			          <ListItem
 			            key={index}
 			            rightIconButton={
-										<RaisedButton label="Search" style={{marginTop: 5.5, marginRight: 5}} />
-						      }
+			            	this.renderIconButtons(suggest.Suggestion)
+			            }
 			            primaryText={suggest.Suggestion}
 			            primaryTogglesNestedList={true}
 			            onNestedListToggle={this.handleNestedListToggle}
@@ -172,6 +223,7 @@ class SuggestionResults extends Component {
   	}
 
   	if (validQuery === true) {
+  		// use these values to trigger loading icons!!!
   		return(
   			<div>
   				This is a valid request
@@ -221,12 +273,20 @@ class SuggestionResults extends Component {
 
 		return(
 			<div>
-				{this.renderValid()}
-				"this is the suggestion results window"
+				<div className="center">
+					{this.renderValid()}
+					"this is the suggestion results window"
+				</div>
         {this.renderListSuggestion()}
 			</div>
 		)
 	}
 }
 
-export default SuggestionResults;
+function mapStateToProps(state) {
+	return {
+		tempQueue: state.tempQueue
+	}
+}
+
+export default connect(mapStateToProps, actions)(SuggestionResults);

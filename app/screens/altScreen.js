@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import SearchPanel from '../components/searchPanel'
+import SearchPanel from '../components/searchPanel';
+import TempSearchQueuePanel from '../components/tempSearchQueuePanel';
 import { Link } from 'react-router-dom'
 import { withRouter } from 'react-router';
 
@@ -13,7 +14,14 @@ class AltScreen extends Component {
 				<h1>
 					this is the alternate screen
 				</h1>
-				<SearchPanel />
+				<div id="wrapper">
+					<div id="left">
+						<SearchPanel />
+					</div>
+					<div id="right">
+						<TempSearchQueuePanel />
+					</div>
+				</div>
 			</div>
 		);
 	}

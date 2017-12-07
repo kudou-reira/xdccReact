@@ -34,7 +34,7 @@ class SearchPanel extends Component {
 			if(this.props.search.queried.tempSearches !== null) {
 				if(this.props.search.queried.tempSearches[0].Compilation !== null) {
 					return(
-						<RaisedButton label="Search" style={{marginTop: 5.5, marginRight: 5, marginLeft: 15}} />
+						<RaisedButton label="Search this query instead" style={{marginTop: 5.5, marginRight: 5, marginLeft: 15}} />
 					);
 				}
 			}
@@ -49,7 +49,7 @@ class SearchPanel extends Component {
 				<div>
 					this is the searchPanel
 				</div>
-				<div>
+				<div className="center">
 					<Debounce time="550" handler="onChange">
 						<TextField
 		         	hintText="Enter title here"

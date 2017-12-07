@@ -7,3 +7,19 @@
 h1 {
   font-size: 14px;
 }
+
+#wrapper {
+  display: flex;
+}
+
+#left {
+  flex: 0 0 69%;
+}
+
+#right {
+  flex: 1;
+}
+
+.center {
+	text-align: center;
+}

@@ -1,5 +1,5 @@
 import {
-	FETCH_SUGGESTIONS
+	FETCH_SUGGESTIONS,
 } from '../actions/types';
 
 const INITIAL_STATE = {
