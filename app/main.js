@@ -1,6 +1,9 @@
 import path from 'path';
 import url from 'url';
 import {app, crashReporter, BrowserWindow, Menu, ipcMain, shell } from 'electron';
+const { requireTaskPool } = require('electron-remote');
+const fetchSuggestions = requireTaskPool(require.resolve('./childProcesses/fetchSuggestions'));
+
 const axios = require('axios');
 const _ = require('lodash');
 var os = require('os');
@@ -144,24 +147,29 @@ ipcMain.on('videos:added', (event, videos) => {
 
 
 ipcMain.on('fetch:suggestions', (e, suggestion) => {
-  console.log("entered query in front end", suggestion);
+  console.log('start fetchSuggestions');
+  fetchSuggestions(suggestion).then(result => {
+    mainWindow.webContents.send('fetch:suggestionsDone', result);
+  });
+
+
   // can always try using request module for node
-  fetchSuggestions(suggestion)
-    .then((data) => {
-      // it gets the data fine, is the problem in mainWindow.send?
-      console.log('this is the returned data', data);
-      mainWindow.webContents.send('fetch:suggestionsDone', data);
-    });
+  // fetchSuggestions(suggestion)
+  //   .then((data) => {
+
+  //     console.log('this is the returned data', data);
+  //     mainWindow.webContents.send('fetch:suggestionsDone', data);
+  //   });
 });
 
-async function fetchSuggestions(suggestion) {
-  const res = await axios.get('http://localhost:8080/xdccTempSearch', {
-    params: {
-      suggestion
-    }
-  });
-  return res.data;
-}
+// async function fetchSuggestions(suggestion) {
+//   const res = await axios.get('http://localhost:8080/xdccTempSearch', {
+//     params: {
+//       suggestion
+//     }
+//   });
+//   return res.data;
+// }
 
 
 

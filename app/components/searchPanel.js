@@ -3,7 +3,7 @@ import SuggestionResults from './suggestionResults';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import { connect } from 'react-redux';
-import { Debounce } from 'react-throttle';
+import { Debounce, Throttle } from 'react-throttle';
 import * as actions from '../actions';
 
 class SearchPanel extends Component {
@@ -24,9 +24,10 @@ class SearchPanel extends Component {
 			console.log(this.state.searchTitle);
 		});
 
-		if(this.state.searchTitle.length >= 3) {
-			this.props.fetchSuggestions(this.state.searchTitle)
-		}
+
+		setTimeout(() => {
+			this.props.fetchSuggestions(this.state.searchTitle);
+		}, 1500);
 	}
 
 	renderButton() {
@@ -50,13 +51,13 @@ class SearchPanel extends Component {
 					this is the searchPanel
 				</div>
 				<div className="center">
-					<Debounce time="550" handler="onChange">
+					<Throttle time="400" handler="onChange">
 						<TextField
 		         	hintText="Enter title here"
 			        floatingLabelText="Searching anime..."
 			        onChange={this.onTextChange}
 			      />
-		      </Debounce>
+		      </Throttle>
 		      {this.renderButton()}
 				</div>
 				<div>

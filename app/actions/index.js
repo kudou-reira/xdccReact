@@ -1,5 +1,6 @@
 import { ipcRenderer }  from 'electron';
 import { FETCH_SUGGESTIONS, UPDATE_TEMP_QUEUE, DELETE_TEMP_QUEUE } from "./types";
+ipcRenderer.setMaxListeners(0);
 
 // TODO: Communicate to MainWindow process that videos
 // have been added and are pending conversion
@@ -17,7 +18,7 @@ export const addVideos = videos => dispatch => {
 
 export const fetchSuggestions = tempTitle => dispatch => {
   ipcRenderer.send('fetch:suggestions', tempTitle);
-  ipcRenderer.on('fetch:suggestionsDone', (event, suggestions) => {
+  ipcRenderer.once('fetch:suggestionsDone', (event, suggestions) => {
     dispatch({
       type: FETCH_SUGGESTIONS,
       payload: suggestions
