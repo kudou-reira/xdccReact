@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {List, ListItem} from 'material-ui/List';
 import Subheader from 'material-ui/Subheader';
 import RaisedButton from 'material-ui/RaisedButton';
+import IconButton from 'material-ui/IconButton';
 import { connect } from 'react-redux';
 import _ from 'lodash';
 import * as actions from '../actions';
@@ -88,7 +89,7 @@ class SuggestionResults extends Component {
 
   renderIconButtons(suggest) {
   	return(
-  		<div>
+      <div>
   			<RaisedButton 
 		  		label="Add to queue" 
 		  		style={{marginTop: 5.5, marginRight: 5}}
@@ -99,7 +100,7 @@ class SuggestionResults extends Component {
 		  		style={{marginTop: 5.5, marginRight: 5}}
 		  		onClick={() => this.searchButtonClicked(suggest)} 
 		  	/>
-	  	</div>
+      </div>
   	);
   }
 

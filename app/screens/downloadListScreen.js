@@ -1,16 +1,36 @@
 import React, { Component } from 'react';
+import { withRouter } from 'react-router';
+import { Link } from 'react-router-dom';
+import { ipcRenderer }  from 'electron';
+
+ipcRenderer.on('send:queueDone', (event, botStack) => {
+	console.log("this is the botstack in downloadlist", botStack);
+
+});
 
 class DownloadListScreen extends Component {
-	nativeWindowObject = null;
-	componentWillMount() {
-		this.nativeWindowObject = window.open('');
+
+	componentDidMount() {
+
 	}
-	
+
+	// switchScreens() {
+	// 	console.log("this is the switchScreens")
+	// 	this.props.history.push('/alt')
+	// }
+
 	render(){
 		return(
-			return this.nativeWindowObject ? ReactDOM.createPortal(this.props.children, this.nativeWindowObject.document.body) : null
+			<div>
+				<div>
+					<Link to="/">
+						Go to homescreen
+					</Link>
+				</div>
+				this is the download list screen
+			</div>
 		);
 	}
 }
 
-export default DownloadListScreen;
+export default withRouter(DownloadListScreen);

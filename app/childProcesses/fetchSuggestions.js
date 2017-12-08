@@ -2,7 +2,6 @@ const axios = require('axios');
 
 function fetchSuggestions(suggestion) {
   console.log("this is the suggestion", suggestion);
-  // can always try using request module for node
   fetchSuggestions(suggestion)
     .then((data) => {
       console.log('this is the returned data', data);

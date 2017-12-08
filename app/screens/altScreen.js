@@ -23,11 +23,6 @@ class AltScreen extends Component {
 						<TempSearchQueuePanel />
 					</div>
 				</div>
-				<DownloadListScreen>
-					<div>
-						hi
-					</div>
-				</DownloadListScreen>
 			</div>
 		);
 	}

@@ -13,6 +13,7 @@ const isDevelopment = (process.env.NODE_ENV === 'development');
 process.env.GOOGLE_API_KEY = "AIzaSyCpdUeRmQD8ICPR6IWT-tUGQUBTxdGY404";
 
 let mainWindow = null;
+let downloadWindow = null;
 let forceQuit = false;
 
 const installExtensions = async () => {
@@ -52,7 +53,7 @@ app.on('ready', async () => {
   }
 
   mainWindow = new BrowserWindow({ 
-    width: 1000, 
+    width: 1400, 
     height: 800,
     minWidth: 640,
     minHeight: 480,
@@ -97,6 +98,64 @@ app.on('ready', async () => {
       });
     }
   });
+
+  downloadWindow = new BrowserWindow({ 
+    width: 1000, 
+    height: 800,
+    minWidth: 640,
+    minHeight: 480,
+    show: false ,
+    nativeWindowOpen: true,
+    title: 'Download List'
+  });
+
+  downloadWindow.loadURL(url.format({
+    pathname: path.join(__dirname, 'index.html'),
+    protocol: 'file:',
+    slashes: true
+  }));
+
+  downloadWindow.webContents.on('did-finish-load', () => {
+    // Handle window logic properly on macOS:
+    // 1. App should not terminate if window has been closed
+    // 2. Click on icon in dock should re-open the window
+    // 3. ⌘+Q should close the window and quit the app
+    if (process.platform === 'darwin') {
+      downloadWindow.on('close', function (e) {
+        if (!forceQuit) {
+          e.preventDefault();
+          downloadWindow.hide();
+        }
+      });
+
+      app.on('activate', () => {
+        downloadWindow.show();
+      });
+      
+      app.on('before-quit', () => {
+        forceQuit = true;
+      });
+    } else {
+      downloadWindow.on('close', function (e) {
+        e.preventDefault();
+        downloadWindow.hide();
+        // downloadWindow = null;
+      });
+    }
+  });
+
+  // mainWindow.webContents.on('new-window', (event, url, frameName, disposition, options, additionalFeatures) => {
+  //   // open window as modal
+  //   event.preventDefault()
+  //   Object.assign(options, {
+  //     parent: mainWindow,
+  //     width: 1000, 
+  //     height: 800,
+  //     minWidth: 640,
+  //     minHeight: 480
+  //   })
+  //   event.newGuest = new BrowserWindow(options)
+  // })
 
   if (isDevelopment) {
     // auto-open dev tools
@@ -157,22 +216,24 @@ ipcMain.on('fetch:suggestions', (e, suggestion) => {
 
 ipcMain.on('send:queue', (e, queue) => {
   console.log('this is sendQueue');
+
   sendQueue(queue).then((result) => {
+    console.log("these are sendQueue results", result);
     mainWindow.webContents.send('send:queueDone', result);
-  })
-})
+    // might have to send to another window too
+    downloadWindow.show();
+    downloadWindow.webContents.send('send:queueDone', result);
+  });
+});
 
-// async function fetchSuggestions(suggestion) {
-//   const res = await axios.get('http://localhost:8080/xdccTempSearch', {
-//     params: {
-//       suggestion
-//     }
-//   });
-//   return res.data;
-// }
-
+// ipcMain.on('downloadWindow:queue', (e, queue) => {
+//   downloadWindow.show();
+//   downloadWindow.webContents.send('downloadWindow:queueDone', queue);
+// });
 
 
+
+ 
 var interfaces = os.networkInterfaces();
 var addresses = [];
 for (var k in interfaces) {
@@ -185,8 +246,6 @@ for (var k in interfaces) {
 }
 
 console.log(addresses);
-
-
 
 
 

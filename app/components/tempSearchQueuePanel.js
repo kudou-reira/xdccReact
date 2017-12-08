@@ -12,6 +12,17 @@ class TempSearchQueuePanel extends Component {
 		this.removeButton = this.removeButton.bind(this);
 	}
 
+	// componentWillReceiveProps(nextProps){
+	// 	if(nextProps.download !== null){
+	// 		console.log("this is nextProps sending!!!!!!!!!!!!!!!!!")
+	// 		this.props.downloadWindowSend(nextProps.download);
+	// 		// if(nextProps.download !== null) {
+
+	// 		// 	this.props.downloadWindowSend(nextProps.download);
+	// 		// }
+	// 	}
+	// }
+
 	removeButton(item) {
 		console.log("this is the removeButton", item);
 		this.props.deleteTempQueue(item);
@@ -76,6 +87,7 @@ class TempSearchQueuePanel extends Component {
 	} 
 
 	render() {
+		console.log("this is the downloadList", this.props.downloadList);
 		return(
 			<div>
 				<div>
@@ -90,7 +102,8 @@ class TempSearchQueuePanel extends Component {
 
 function mapStateToProps(state) {
 	return {
-		tempQueue: state.tempQueue
+		tempQueue: state.tempQueue,
+		downloadList: state.downloadList
 	}
 }
 

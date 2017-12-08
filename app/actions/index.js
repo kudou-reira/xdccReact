@@ -1,5 +1,15 @@
 import { ipcRenderer }  from 'electron';
-import { FETCH_SUGGESTIONS, UPDATE_TEMP_QUEUE, DELETE_TEMP_QUEUE, SEND_TEMP_QUEUE } from "./types";
+import { FETCH_SUGGESTIONS, UPDATE_TEMP_QUEUE, DELETE_TEMP_QUEUE, SEND_TEMP_QUEUE, DOWNLOAD_TEMP_QUEUE } from "./types";
+// const {BrowserWindow} = require('electron').remote;
+// let downloadWindow = new BrowserWindow({ 
+//     width: 1000, 
+//     height: 800,
+//     minWidth: 640,
+//     minHeight: 480,
+//     show: false ,
+//     nativeWindowOpen: true
+//   });
+
 // import { requireTaskPool } from 'electron-remote';
 // ipcRenderer.setMaxListeners(0);
 
@@ -43,13 +53,23 @@ export const deleteTempQueue = (item) => {
 
 export const sendTempQueue = queue => dispatch => {
   ipcRenderer.send('send:queue', queue);
-  ipcRenderer.once('fetch:queueDone', (event, botStack) => {
+  ipcRenderer.once('send:queueDone', (event, botStack) => {
     dispatch({
       type: SEND_TEMP_QUEUE,
       payload: botStack
     });
   });
 }
+
+// export const downloadWindowSend = queue => dispatch => {
+//   ipcRenderer.send('downloadWindow:queue');
+//   ipcRenderer.once('downloadWindow:queueDone', (event, botStack) => {
+//     dispatch({
+//       type: DOWNLOAD_TEMP_QUEUE,
+//       payload: botStack
+//     });
+//   })
+// }
 
 // TODO: Communicate to MainWindow that the user wants
 // to start converting videos.  Also listen for feedback
