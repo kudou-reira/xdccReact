@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import SearchPanel from '../components/searchPanel';
 import TempSearchQueuePanel from '../components/tempSearchQueuePanel';
+import DownloadListScreen from './downloadListScreen';
 import { Link } from 'react-router-dom'
 import { withRouter } from 'react-router';
 
@@ -22,6 +23,11 @@ class AltScreen extends Component {
 						<TempSearchQueuePanel />
 					</div>
 				</div>
+				<DownloadListScreen>
+					<div>
+						hi
+					</div>
+				</DownloadListScreen>
 			</div>
 		);
 	}

@@ -1,6 +1,7 @@
 import { ipcRenderer }  from 'electron';
-import { FETCH_SUGGESTIONS, UPDATE_TEMP_QUEUE, DELETE_TEMP_QUEUE } from "./types";
-ipcRenderer.setMaxListeners(0);
+import { FETCH_SUGGESTIONS, UPDATE_TEMP_QUEUE, DELETE_TEMP_QUEUE, SEND_TEMP_QUEUE } from "./types";
+// import { requireTaskPool } from 'electron-remote';
+// ipcRenderer.setMaxListeners(0);
 
 // TODO: Communicate to MainWindow process that videos
 // have been added and are pending conversion
@@ -40,6 +41,15 @@ export const deleteTempQueue = (item) => {
   });
 }
 
+export const sendTempQueue = queue => dispatch => {
+  ipcRenderer.send('send:queue', queue);
+  ipcRenderer.once('fetch:queueDone', (event, botStack) => {
+    dispatch({
+      type: SEND_TEMP_QUEUE,
+      payload: botStack
+    });
+  });
+}
 
 // TODO: Communicate to MainWindow that the user wants
 // to start converting videos.  Also listen for feedback

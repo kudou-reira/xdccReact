@@ -3,6 +3,7 @@ import url from 'url';
 import {app, crashReporter, BrowserWindow, Menu, ipcMain, shell } from 'electron';
 const { requireTaskPool } = require('electron-remote');
 const fetchSuggestions = requireTaskPool(require.resolve('./childProcesses/fetchSuggestions'));
+const sendQueue = requireTaskPool(require.resolve('./childProcesses/sendQueue'));
 
 const axios = require('axios');
 const _ = require('lodash');
@@ -55,7 +56,8 @@ app.on('ready', async () => {
     height: 800,
     minWidth: 640,
     minHeight: 480,
-    show: false 
+    show: false ,
+    nativeWindowOpen: true
   });
 
   mainWindow.loadURL(url.format({
@@ -148,19 +150,17 @@ ipcMain.on('videos:added', (event, videos) => {
 
 ipcMain.on('fetch:suggestions', (e, suggestion) => {
   console.log('start fetchSuggestions');
-  fetchSuggestions(suggestion).then(result => {
+  fetchSuggestions(suggestion).then((result) => {
     mainWindow.webContents.send('fetch:suggestionsDone', result);
   });
-
-
-  // can always try using request module for node
-  // fetchSuggestions(suggestion)
-  //   .then((data) => {
-
-  //     console.log('this is the returned data', data);
-  //     mainWindow.webContents.send('fetch:suggestionsDone', data);
-  //   });
 });
+
+ipcMain.on('send:queue', (e, queue) => {
+  console.log('this is sendQueue');
+  sendQueue(queue).then((result) => {
+    mainWindow.webContents.send('send:queueDone', result);
+  })
+})
 
 // async function fetchSuggestions(suggestion) {
 //   const res = await axios.get('http://localhost:8080/xdccTempSearch', {

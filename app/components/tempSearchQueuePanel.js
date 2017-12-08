@@ -17,6 +17,11 @@ class TempSearchQueuePanel extends Component {
 		this.props.deleteTempQueue(item);
 	}
 
+	sendQueue() {
+		console.log("this is send queue");
+		this.props.sendTempQueue(this.props.tempQueue.stack);
+	}
+
 	generateTempQueueElements() {
 		var tempQueueElements;
 		if(this.props.tempQueue.stack !== null) {
@@ -42,22 +47,40 @@ class TempSearchQueuePanel extends Component {
 
 	renderOverallQueue() {
 		if(this.props.tempQueue.stack !== null) {
-			return(
-				<div>
-					<List>
-	          <Subheader>Current Search Queue</Subheader>
-	          {this.generateTempQueueElements()}
-	        </List>
-				</div>
-			);
+			if(this.props.tempQueue.stack.length > 0) {
+				return(
+					<div>
+						<List>
+		          <Subheader>Current Search Queue</Subheader>
+		          {this.generateTempQueueElements()}
+		        </List>
+					</div>
+				);
+			}
 		}
 	}
+
+	renderSendQueueButton() {
+		if(this.props.tempQueue.stack !== null) {
+			if(this.props.tempQueue.stack.length > 0) {
+				return(
+					<RaisedButton
+						labelStyle={{ fontSize: 12 }} 
+			  		label="Send Queue" 
+			  		style={{marginLeft: 12, marginRight: 5}}
+			  		onClick={() => this.sendQueue()} 
+			  	/>
+				);
+			}
+		}
+	} 
 
 	render() {
 		return(
 			<div>
 				<div>
 					Current Temporary Queue
+					{this.renderSendQueueButton()}
 				</div>
 				{this.renderOverallQueue()}
 			</div>

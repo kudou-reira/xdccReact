@@ -21,13 +21,21 @@ class SearchPanel extends Component {
 
 	onTextChange(event) {
 		this.setState({ searchTitle: event.target.value }, () => {
-			console.log(this.state.searchTitle);
+			console.log("this is the searchTitle state", this.state.searchTitle);
 		});
 
+		if (this.state.searchTitle === '') {
+			setTimeout(() => {
+				this.props.fetchSuggestions(this.state.searchTitle);
+			}, 1800);
+		}
 
-		setTimeout(() => {
-			this.props.fetchSuggestions(this.state.searchTitle);
-		}, 1500);
+		else if (this.state.searchTitle.length >= 3) {
+			setTimeout(() => {
+				this.props.fetchSuggestions(this.state.searchTitle);
+			}, 1800);
+		}
+
 	}
 
 	renderButton() {
@@ -35,7 +43,7 @@ class SearchPanel extends Component {
 			if(this.props.search.queried.tempSearches !== null) {
 				if(this.props.search.queried.tempSearches[0].Compilation !== null) {
 					return(
-						<RaisedButton label="Search this query instead" style={{marginTop: 5.5, marginRight: 5, marginLeft: 15}} />
+						<RaisedButton label="Search this query instead" style={{ marginRight: 5, marginLeft: 15}} />
 					);
 				}
 			}
