@@ -9,6 +9,9 @@ import WeatherPanel from '../components/weatherPanel';
 import { Link } from 'react-router-dom'
 import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
+import * as actions from '../actions';
+
+const windowID = require('electron').remote.getCurrentWindow().id;
 
 // import '../layout/reactGrid/styles.css';
 // import '../layout/reactResizable/styles.css';
@@ -26,8 +29,7 @@ class HomeScreen extends Component {
 		super();
 		this.state = {
 			widthWindow: '0',
-			heightWindow: '0',
-			tempDownloadList: []
+			heightWindow: '0'
 		}
 
 		this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
@@ -46,16 +48,18 @@ class HomeScreen extends Component {
 
 	componentDidMount() {
 		global.addEventListener('resize', this.updateWindowDimensions);
+
+		console.log('this is the get current window', require('electron').remote.getCurrentWindow().id);
 		// this.mounted = true;
+		// i don't have to setState i guess...
 		ipcRenderer.on('send:queueDone', (event, botStack) => {
 			console.log("this is the botstack from homeScreen", botStack);
-			this.setState({
-				tempDownloadList: botStack.botSearches
-			}, () => {
-				if (this.state.tempDownloadList.length > 0) {
-					this.props.history.push('/downloadList');
-				}
-			})
+			var tempDownloadList = botStack.botSearches;
+			if (tempDownloadList.length > 0 && windowID !== 1) {
+
+				this.props.history.push('/downloadList');
+				this.props.downloadWindowSend(tempDownloadList);
+			}
 		});
 	}
 
@@ -120,5 +124,5 @@ class HomeScreen extends Component {
 // 		downloadList: state.download
 // 	}
 // }
-export default withRouter(HomeScreen);
-// export default connect(mapStateToProps, null)(withRouter(HomeScreen));
+// export default withRouter(HomeScreen);
+export default connect(null, actions)(withRouter(HomeScreen));

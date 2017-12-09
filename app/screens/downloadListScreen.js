@@ -16,23 +16,6 @@ class DownloadListScreen extends Component {
 		}
 	}
 
-	componentDidMount() {
-		ipcRenderer.on('send:queueDone', (event, botStack) => {
-			console.log("this is the downloadListener", botStack);
-			this.setState({
-				downloadList: botStack
-			}, () => {
-				console.log("this is downloadlist", this.state.downloadList);
-				this.props.downloadWindowSend(this.state.downloadList);
-			});
-		});
-	}
-
-	// switchScreens() {
-	// 	console.log("this is the switchScreens")
-	// 	this.props.history.push('/alt')
-	// }
-
 	render(){
 		console.log("this is downloadlist props", this.props.downloadList)
 		return(

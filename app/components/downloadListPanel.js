@@ -6,10 +6,12 @@ class DownloadListPanel extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			open: false
+			open: false,
+			downloadBots: []
 		}
 
 		this.handleNestedListToggle = this.handleNestedListToggle.bind(this);
+		this.onDownloadClick = this.onDownloadClick.bind(this);
 	}
 
 	handleNestedListToggle(item) {
@@ -18,39 +20,61 @@ class DownloadListPanel extends Component {
     });
   };
 
+  onDownloadClick(item) {
+  	console.log("ITEMMMMMMMMMMMMMMMMMMMMMMMMMMMM", item);
+  }
+
   generateDownloadDetails(downloadDetails) {
-  	console.log("this is downloadDetails", downloadDetails);
-  	var downloadContent = (
-  		<ListItem
+  	var downloadContent = downloadDetails.BotSpecies.map((details, index) => {
+  		return(
+  			<ListItem
   				key={index}
   				primaryText={'hello'}
   			>
-  			
-  		</ListItem>
-  	);
+  				{this.generateIndividualBotDetails(details)}
+  			</ListItem>
+  		);
+  	});
 
   	return downloadContent;
   }
 
+  generateIndividualBotDetails(botDetails) {
+  	return(
+  		<div>
+  			<div>
+  				Bot Name: {botDetails.BotName}
+  			</div>
+  			<div>
+  				File Size: {botDetails.FileSize}
+  			</div>
+  			<div>
+  				Pack Number: {botDetails.PackNumber}
+  			</div>
+  			<div>
+  				Message Call: {botDetails.MessageCall}
+  			</div>
+  		</div>
+  	);
+  }
+
+
 	renderDownloadList() {
 		var downloadList;
 		if(this.props.list.download !== null) {
-			if(this.props.list.download.botSearches !== null) {
-				downloadList = this.props.list.download.botSearches.map((download, index) => {
-					console.log("this is download", download.BotOverall[0]);
-					return(
-						<ListItem
-		          key={index}
-		          primaryText={download.BotOverall[0].FileName}
-		          primaryTogglesNestedList={true}
-          		onNestedListToggle={this.handleNestedListToggle}
-	            nestedItems={this.generateDownloadDetails(download.BotOverall[0])}
-		        />
-					);
-				});
-			}
+			downloadList = this.props.list.download.map((download, index) => {
+				return(
+					<ListItem
+	          key={index}
+	          primaryText={download.BotOverall[0].FileName}
+	          primaryTogglesNestedList={true}
+        		onNestedListToggle={this.handleNestedListToggle}
+            nestedItems={this.generateDownloadDetails(download.BotOverall[0])}
+            onClick={() => {this.onDownloadClick(download.BotOverall[0])}}
+	        />
+				);
+			});
 		}
-	
 		return downloadList;
 	}
 

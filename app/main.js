@@ -78,7 +78,7 @@ app.on('ready', async () => {
     // 2. Click on icon in dock should re-open the window
     // 3. ⌘+Q should close the window and quit the app
 
-    let windowTitle = 'XDCC';
+    let windowTitle = 'XDCC Search';
     mainWindow.setTitle(windowTitle);
 
     if (process.platform === 'darwin') {

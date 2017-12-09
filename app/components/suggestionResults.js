@@ -22,17 +22,7 @@ class SuggestionResults extends Component {
 		this.addButtonClicked = this.addButtonClicked.bind(this);
 		this.searchButtonClicked = this.searchButtonClicked.bind(this);
 	}
-
-	// componentWillReceiveProps(nextProps){
-	// 	if(nextProps.suggestions !== this.props.suggestions){
-	// 		if(nextProps.suggestions !== null) {
-	// 			this.setState({ searchSuggestions: this.props.results }, () => {
-	// 				console.log("new component", this.state.searchSuggestions);
-	// 			});
-	// 		}
-	// 	}
-	// }
-
+  
 	handleNestedListToggle(item) {
     this.setState({
       open: item.state.open
