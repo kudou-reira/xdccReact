@@ -2,16 +2,30 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
 import { ipcRenderer }  from 'electron';
+import { connect } from 'react-redux';
+import * as actions from '../actions';
 
-ipcRenderer.on('send:queueDone', (event, botStack) => {
-	console.log("this is the botstack in downloadlist", botStack);
-
-});
+import DownloadListPanel from '../components/downloadListPanel';
 
 class DownloadListScreen extends Component {
 
-	componentDidMount() {
+	constructor() {
+		super();
+		this.state = {
+			downloadList: []
+		}
+	}
 
+	componentDidMount() {
+		ipcRenderer.on('send:queueDone', (event, botStack) => {
+			console.log("this is the downloadListener", botStack);
+			this.setState({
+				downloadList: botStack
+			}, () => {
+				console.log("this is downloadlist", this.state.downloadList);
+				this.props.downloadWindowSend(this.state.downloadList);
+			});
+		});
 	}
 
 	// switchScreens() {
@@ -20,6 +34,7 @@ class DownloadListScreen extends Component {
 	// }
 
 	render(){
+		console.log("this is downloadlist props", this.props.downloadList)
 		return(
 			<div>
 				<div>
@@ -27,10 +42,17 @@ class DownloadListScreen extends Component {
 						Go to homescreen
 					</Link>
 				</div>
-				this is the download list screen
+				<DownloadListPanel list={this.props.downloadList} />
 			</div>
 		);
 	}
 }
 
-export default withRouter(DownloadListScreen);
+function mapStateToProps(state) {
+	return {
+		downloadList: state.downloadList
+	}
+}
+
+// export default withRouter(DownloadListScreen);
+export default connect(mapStateToProps, actions)(withRouter(DownloadListScreen));

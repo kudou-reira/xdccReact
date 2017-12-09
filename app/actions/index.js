@@ -61,15 +61,12 @@ export const sendTempQueue = queue => dispatch => {
   });
 }
 
-// export const downloadWindowSend = queue => dispatch => {
-//   ipcRenderer.send('downloadWindow:queue');
-//   ipcRenderer.once('downloadWindow:queueDone', (event, botStack) => {
-//     dispatch({
-//       type: DOWNLOAD_TEMP_QUEUE,
-//       payload: botStack
-//     });
-//   })
-// }
+export const downloadWindowSend = (queue) => {
+  return({
+    type: DOWNLOAD_TEMP_QUEUE,
+    payload: queue
+  });
+}
 
 // TODO: Communicate to MainWindow that the user wants
 // to start converting videos.  Also listen for feedback

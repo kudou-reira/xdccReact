@@ -17,7 +17,6 @@ class SuggestionResults extends Component {
 			open: false
 		}
 
-		this.handleToggle = this.handleToggle.bind(this);
 		this.handleNestedListToggle = this.handleNestedListToggle.bind(this);
 		this.handleListItemClick = this.handleListItemClick.bind(this);
 		this.addButtonClicked = this.addButtonClicked.bind(this);
@@ -33,12 +32,6 @@ class SuggestionResults extends Component {
 	// 		}
 	// 	}
 	// }
-
-	handleToggle() {
-    this.setState({
-      open: !this.state.open,
-    });
-  };
 
 	handleNestedListToggle(item) {
     this.setState({

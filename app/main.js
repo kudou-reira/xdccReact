@@ -77,6 +77,10 @@ app.on('ready', async () => {
     // 1. App should not terminate if window has been closed
     // 2. Click on icon in dock should re-open the window
     // 3. ⌘+Q should close the window and quit the app
+
+    let windowTitle = 'XDCC';
+    mainWindow.setTitle(windowTitle);
+
     if (process.platform === 'darwin') {
       mainWindow.on('close', function (e) {
         if (!forceQuit) {
@@ -120,6 +124,9 @@ app.on('ready', async () => {
     // 1. App should not terminate if window has been closed
     // 2. Click on icon in dock should re-open the window
     // 3. ⌘+Q should close the window and quit the app
+    let windowTitle = 'Download List';
+    downloadWindow.setTitle(windowTitle);
+
     if (process.platform === 'darwin') {
       downloadWindow.on('close', function (e) {
         if (!forceQuit) {
@@ -169,6 +176,18 @@ app.on('ready', async () => {
           mainWindow.inspectElement(props.x, props.y);
         }
       }]).popup(mainWindow);
+    });
+
+    downloadWindow.webContents.openDevTools();
+
+    // add inspect element on right click menu
+    downloadWindow.webContents.on('context-menu', (e, props) => {
+      Menu.buildFromTemplate([{
+        label: 'Inspect element',
+        click() {
+          downloadWindow.inspectElement(props.x, props.y);
+        }
+      }]).popup(downloadWindow);
     });
   }
 });

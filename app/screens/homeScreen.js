@@ -19,23 +19,6 @@ if (process.env.BROWSER) {
 	// var styles = require('./layout/index.css');
 }
 
-var tempDownloadList
-
-ipcRenderer.on('send:queueDone', (event, botStack) => {
-	console.log("this is the botstack from homeScreen", botStack);
-	tempDownloadList = botStack.botSearches
-});
-// ipcRenderer.on('send:queueDone', (event, botStack) => {
-// 	console.log("this is the botstack from homeScreen", botStack);
-// 	this.setState({
-// 		tempDownloadList: botStack.botSearches
-// 	}, () => {
-// 		if (this.state.tempDownloadList.length > 0) {
-// 			this.props.history.push('/downloadList');
-// 		}
-// 	})
-// });
-
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
 class HomeScreen extends Component {
@@ -44,18 +27,18 @@ class HomeScreen extends Component {
 		this.state = {
 			widthWindow: '0',
 			heightWindow: '0',
-			tempDownloadList: tempDownloadList
+			tempDownloadList: []
 		}
 
 		this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
 	}
 
-	shouldComponentUpdate(nextProps, nextState) {
-		console.log("this is component should update")
-		if (nextState !== this.state) {
-			return true;
-		}
-	}
+	// shouldComponentUpdate(nextProps, nextState) {
+	// 	console.log("this is component should update")
+	// 	if (nextState !== this.state) {
+	// 		return true;
+	// 	}
+	// }
 
 	componentWillMount() {
 		this.updateWindowDimensions();
@@ -64,13 +47,16 @@ class HomeScreen extends Component {
 	componentDidMount() {
 		global.addEventListener('resize', this.updateWindowDimensions);
 		// this.mounted = true;
-		console.log("this is tempdownload list length", this.state.tempDownloadList)
-		if (this.state.tempDownloadList !== undefined) {
-			if (this.state.tempDownloadList.length > 0) {
-				console.log("this is tempdownload list length", this.state.tempDownloadList)
-				this.props.history.push('/downloadList');
-			}
-		}
+		ipcRenderer.on('send:queueDone', (event, botStack) => {
+			console.log("this is the botstack from homeScreen", botStack);
+			this.setState({
+				tempDownloadList: botStack.botSearches
+			}, () => {
+				if (this.state.tempDownloadList.length > 0) {
+					this.props.history.push('/downloadList');
+				}
+			})
+		});
 	}
 
 	componentWillUnmount() {
@@ -100,8 +86,6 @@ class HomeScreen extends Component {
 			{i: 'weatherPanel', x: 0, y: 0, w: 3, h: 4},
 			{i: 'pocketPanel', x: 9, y: 7, w: 3, h: 3},
 	    ];
-
-	  console.log("this is the downloadList", this.props.downloadList);
 
     return (
       <div>
