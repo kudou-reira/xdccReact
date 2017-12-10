@@ -38,17 +38,17 @@ class SearchPanel extends Component {
 
 	}
 
-	renderButton() {
-		if(this.props.search.queried !== null) {
-			if(this.props.search.queried.tempSearches !== null) {
-				if(this.props.search.queried.tempSearches[0].Compilation !== null) {
-					return(
-						<RaisedButton label="Search this query instead" style={{ marginRight: 5, marginLeft: 15}} />
-					);
-				}
-			}
-		}
-	}
+	// renderButton() {
+	// 	if(this.props.search.queried !== null) {
+	// 		if(this.props.search.queried.tempSearches !== null) {
+	// 			if(this.props.search.queried.tempSearches[0].Compilation !== null) {
+	// 				return(
+	// 					<RaisedButton label="Search this query instead" style={{ marginRight: 5, marginLeft: 15}} />
+	// 				);
+	// 			}
+	// 		}
+	// 	}
+	// }
 
 	render(){
 		console.log("these are the results of the search query to go backend", this.props.search);
@@ -66,7 +66,6 @@ class SearchPanel extends Component {
 			        onChange={this.onTextChange}
 			      />
 		      </Throttle>
-		      {this.renderButton()}
 				</div>
 				<div>
 					<SuggestionResults suggestions={this.props.search.queried} currentQuery={this.state.searchTitle} />

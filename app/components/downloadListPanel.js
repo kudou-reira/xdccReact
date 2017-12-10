@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import {List, ListItem} from 'material-ui/List';
 import Subheader from 'material-ui/Subheader';
+import RaisedButton from 'material-ui/RaisedButton';
+import { connect } from 'react-redux';
+import * as actions from '../actions';
 
 class DownloadListPanel extends Component {
 	constructor(props) {
@@ -11,7 +14,9 @@ class DownloadListPanel extends Component {
 		}
 
 		this.handleNestedListToggle = this.handleNestedListToggle.bind(this);
-		this.onDownloadClick = this.onDownloadClick.bind(this);
+		this.removeFromDownload = this.removeFromDownload.bind(this);
+		this.clearAllDownloads = this.clearAllDownloads.bind(this);
+		this.startDownloads = this.startDownloads.bind(this);
 	}
 
 	handleNestedListToggle(item) {
@@ -20,8 +25,18 @@ class DownloadListPanel extends Component {
     });
   };
 
-  onDownloadClick(item) {
+  removeFromDownload(item) {
   	console.log("ITEMMMMMMMMMMMMMMMMMMMMMMMMMMMM", item);
+  	this.props.removeDownload(item);
+  }
+
+  clearAllDownloads() {
+  	this.props.clearDownload();
+  }
+
+  startDownloads() {
+  	console.log("this is startDownloads in react", this.props.list.download);
+  	this.props.startDownloads(this.props.list.download);
   }
 
   generateDownloadDetails(downloadDetails) {
@@ -58,6 +73,27 @@ class DownloadListPanel extends Component {
   	);
   }
 
+  renderClearButton() {
+  	return(
+      <RaisedButton 
+	  		label="Clear Download Queue" 
+	  		style={{marginLeft: 15, marginRight: 5}}
+	  		onClick={() => this.clearAllDownloads()} 
+	  	/>
+  	)
+  }
+
+  renderStartButton() {
+  	if(this.props.list.download !== null) {
+ 	  	return(
+	      <RaisedButton 
+		  		label="Start Downloads" 
+		  		style={{marginLeft: 5.5, marginRight: 5}}
+		  		onClick={() => this.startDownloads()}
+		  	/>
+  		)
+  	}
+  }
 
 	renderDownloadList() {
 		var downloadList;
@@ -70,7 +106,13 @@ class DownloadListPanel extends Component {
 	          primaryTogglesNestedList={true}
         		onNestedListToggle={this.handleNestedListToggle}
             nestedItems={this.generateDownloadDetails(download.BotOverall[0])}
-            onClick={() => {this.onDownloadClick(download.BotOverall[0])}}
+             rightIconButton={
+	          	<RaisedButton 
+					  		label="Remove" 
+					  		style={{marginTop: 5.5, marginRight: 5}}
+					  		onClick={() => this.removeFromDownload(download)} 
+					  	/>
+	          }
 	        />
 				);
 			});
@@ -83,6 +125,8 @@ class DownloadListPanel extends Component {
 		return(
 			<div>
 				This is the download list
+				{this.renderClearButton()}
+				{this.renderStartButton()}
 				<div>
 					<List>
 		        <Subheader>Download List</Subheader>
@@ -94,4 +138,4 @@ class DownloadListPanel extends Component {
 	}
 }
 
-export default DownloadListPanel;
+export default connect(null, actions)(DownloadListPanel);

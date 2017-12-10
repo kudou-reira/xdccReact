@@ -9,23 +9,17 @@ class TempSearchQueuePanel extends Component {
 
 	constructor() {
 		super();
-		this.removeButton = this.removeButton.bind(this);
+		this.removeQueue = this.removeQueue.bind(this);
 	}
 
-	// componentWillReceiveProps(nextProps){
-	// 	if(nextProps.download !== null){
-	// 		console.log("this is nextProps sending!!!!!!!!!!!!!!!!!")
-	// 		this.props.downloadWindowSend(nextProps.download);
-	// 		// if(nextProps.download !== null) {
-
-	// 		// 	this.props.downloadWindowSend(nextProps.download);
-	// 		// }
-	// 	}
-	// }
-
-	removeButton(item) {
+	removeQueue(item) {
 		console.log("this is the removeButton", item);
 		this.props.deleteTempQueue(item);
+	}
+
+	clearQueue() {
+		console.log("this is the clearButton");
+		this.props.clearTempQueue();
 	}
 
 	sendQueue() {
@@ -45,7 +39,7 @@ class TempSearchQueuePanel extends Component {
 	          	<RaisedButton 
 					  		label="Remove" 
 					  		style={{marginTop: 5.5, marginRight: 5}}
-					  		onClick={() => this.removeButton(temp)} 
+					  		onClick={() => this.removeQueue(temp)} 
 					  	/>
 	          }
 	          primaryText={temp}
@@ -78,8 +72,23 @@ class TempSearchQueuePanel extends Component {
 					<RaisedButton
 						labelStyle={{ fontSize: 12 }} 
 			  		label="Send Queue" 
-			  		style={{marginLeft: 12, marginRight: 5}}
+			  		style={{marginLeft: 5, marginRight: 5}}
 			  		onClick={() => this.sendQueue()} 
+			  	/>
+				);
+			}
+		}
+	} 
+
+	renderClearButton() {
+		if(this.props.tempQueue.stack !== null) {
+			if(this.props.tempQueue.stack.length > 0) {
+				return(
+					<RaisedButton
+						labelStyle={{ fontSize: 12 }} 
+			  		label="Clear Queue" 
+			  		style={{marginLeft: 5, marginRight: 5}}
+			  		onClick={() => this.clearQueue()} 
 			  	/>
 				);
 			}
@@ -91,8 +100,12 @@ class TempSearchQueuePanel extends Component {
 		return(
 			<div>
 				<div>
-					Current Temporary Queue
-					{this.renderSendQueueButton()}
+					<div id="floatRight">
+						{this.renderSendQueueButton()}
+					</div>
+					<div id="floatRight">
+						{this.renderClearButton()}
+					</div>
 				</div>
 				{this.renderOverallQueue()}
 			</div>

@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import {List, ListItem} from 'material-ui/List';
 import Subheader from 'material-ui/Subheader';
 import RaisedButton from 'material-ui/RaisedButton';
-import IconButton from 'material-ui/IconButton';
 import { connect } from 'react-redux';
 import _ from 'lodash';
 import * as actions from '../actions';
+import Loader from 'halogen/ScaleLoader';
 
 
 class SuggestionResults extends Component {
@@ -22,7 +22,7 @@ class SuggestionResults extends Component {
 		this.addButtonClicked = this.addButtonClicked.bind(this);
 		this.searchButtonClicked = this.searchButtonClicked.bind(this);
 	}
-  
+
 	handleNestedListToggle(item) {
     this.setState({
       open: item.state.open
@@ -217,8 +217,10 @@ class SuggestionResults extends Component {
 
   	else if (validQuery === false && this.props.currentQuery.length >= 3) {
   		return(
-  			<div>
-  				This is not a valid request
+  			<div className="center">
+  				<div>
+            <Loader color='#4DAF7C' size="18px" />
+          </div>
   			</div>
   		);
   	}

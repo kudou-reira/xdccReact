@@ -1,5 +1,15 @@
 import { ipcRenderer }  from 'electron';
-import { FETCH_SUGGESTIONS, UPDATE_TEMP_QUEUE, DELETE_TEMP_QUEUE, SEND_TEMP_QUEUE, DOWNLOAD_TEMP_QUEUE } from "./types";
+import { 
+  FETCH_SUGGESTIONS, 
+  UPDATE_TEMP_QUEUE, 
+  DELETE_TEMP_QUEUE, 
+  CLEAR_TEMP_QUEUE, 
+  SEND_TEMP_QUEUE, 
+  DOWNLOAD_TEMP_QUEUE, 
+  REMOVE_DOWNLOAD, 
+  CLEAR_DOWNLOAD,
+  START_DOWNLOAD
+} from "./types";
 // const {BrowserWindow} = require('electron').remote;
 // let downloadWindow = new BrowserWindow({ 
 //     width: 1000, 
@@ -11,7 +21,7 @@ import { FETCH_SUGGESTIONS, UPDATE_TEMP_QUEUE, DELETE_TEMP_QUEUE, SEND_TEMP_QUEU
 //   });
 
 // import { requireTaskPool } from 'electron-remote';
-// ipcRenderer.setMaxListeners(0);
+ipcRenderer.setMaxListeners(0);
 
 // TODO: Communicate to MainWindow process that videos
 // have been added and are pending conversion
@@ -51,6 +61,13 @@ export const deleteTempQueue = (item) => {
   });
 }
 
+export const clearTempQueue = () => {
+  return({
+    type: CLEAR_TEMP_QUEUE,
+    payload: []
+  });
+}
+
 export const sendTempQueue = queue => dispatch => {
   ipcRenderer.send('send:queue', queue);
   ipcRenderer.once('send:queueDone', (event, botStack) => {
@@ -67,6 +84,32 @@ export const downloadWindowSend = (queue) => {
     payload: queue
   });
 }
+
+export const removeDownload = (item) => {
+  return({
+    type: REMOVE_DOWNLOAD,
+    payload: item
+  });
+}
+
+export const clearDownload = () => {
+  return({
+    type: CLEAR_DOWNLOAD,
+    payload: []
+  });
+}
+
+export const startDownloads = queue => dispatch => {
+  ipcRenderer.send('start:downloads', queue);
+  ipcRenderer.once('start:downloadsDone', (event, downloads) => {
+    dispatch({
+      type: START_DOWNLOAD,
+      payload: downloads
+    })
+  })
+}
+
+
 
 // TODO: Communicate to MainWindow that the user wants
 // to start converting videos.  Also listen for feedback

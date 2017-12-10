@@ -4,6 +4,7 @@ import {app, crashReporter, BrowserWindow, Menu, ipcMain, shell } from 'electron
 const { requireTaskPool } = require('electron-remote');
 const fetchSuggestions = requireTaskPool(require.resolve('./childProcesses/fetchSuggestions'));
 const sendQueue = requireTaskPool(require.resolve('./childProcesses/sendQueue'));
+const startDownloads = requireTaskPool(require.resolve('./childProcesses/startDownloads'));
 
 const axios = require('axios');
 const _ = require('lodash');
@@ -105,7 +106,7 @@ app.on('ready', async () => {
 
   downloadWindow = new BrowserWindow({ 
     width: 1000, 
-    height: 800,
+    height: 600,
     minWidth: 640,
     minHeight: 480,
     show: false ,
@@ -243,6 +244,13 @@ ipcMain.on('send:queue', (e, queue) => {
     downloadWindow.show();
     downloadWindow.webContents.send('send:queueDone', result);
   });
+});
+
+ipcMain.on('start:downloads', (e, queue) => {
+  console.log("this is the start downloads in ipcMain", queue);
+  startDownloads(queue).then((result) => {
+    downloadWindow.webContents.send('start:downloadsDone', result);
+  })
 });
 
 // ipcMain.on('downloadWindow:queue', (e, queue) => {

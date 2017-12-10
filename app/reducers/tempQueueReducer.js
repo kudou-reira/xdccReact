@@ -1,6 +1,7 @@
 import {
 	UPDATE_TEMP_QUEUE,
-	DELETE_TEMP_QUEUE
+	DELETE_TEMP_QUEUE,
+  CLEAR_TEMP_QUEUE
 } from '../actions/types';
 
 const INITIAL_STATE = {
@@ -16,6 +17,8 @@ export default (state = INITIAL_STATE, action) => {
         ...state,
         stack: state.stack.filter(item => item !== action.payload)
       }
+    case CLEAR_TEMP_QUEUE:
+      return {...state, stack: action.payload}
     default:
       return state;
   }
