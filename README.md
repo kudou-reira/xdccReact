@@ -1,6 +1,8 @@
 
 # React Front End for https://github.com/kudou-reira/xdcc2
 
+created with electron, download prototype here and start MyApp https://drive.google.com/file/d/1wE1mkkX5ZUEQH5B48TZnvN3n2ZufeU8i/view?usp=sharing
+
 electron-react-redux-boilerplate fork tailored for personal preference
 
 # electron-react-redux-boilerplate
