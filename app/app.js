@@ -9,6 +9,7 @@ import store from './reducers';
 import HomeScreen from './screens/homeScreen';
 import AltScreen from './screens/altScreen';
 import DownloadListScreen from './screens/downloadListScreen';
+import DownloadingScreen from './screens/downloadingScreen';
 
 const rootElement = document.querySelector(document.currentScript.getAttribute('data-container'));
 
@@ -21,6 +22,7 @@ ReactDOM.render(
             <Route exact path="/" component={HomeScreen} />
             <Route exact path="/alt" component={AltScreen} />
             <Route exact path="/downloadList" component={DownloadListScreen} />
+            <Route exact path="/downloading" component={DownloadingScreen} />
           </Switch>
         </div>
       </MuiThemeProvider>

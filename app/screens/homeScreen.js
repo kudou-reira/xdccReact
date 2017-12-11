@@ -55,10 +55,19 @@ class HomeScreen extends Component {
 		ipcRenderer.on('send:queueDone', (event, botStack) => {
 			console.log("this is the botstack from homeScreen", botStack);
 			var tempDownloadList = botStack.botSearches;
-			if (tempDownloadList.length > 0 && windowID !== 1) {
-
+			if (tempDownloadList.length > 0 && windowID == 2) {
 				this.props.history.push('/downloadList');
 				this.props.downloadWindowSend(tempDownloadList);
+			}
+		});
+
+		ipcRenderer.on('start:downloadsDone', (event, optimizedBotStack) => {
+			console.log("this is the optimizedBotStack", optimizedBotStack);
+			var tempOptimizedBots = optimizedBotStack.optimizedBots;
+			if (tempOptimizedBots.length > 0 && windowID === 3) {
+
+				this.props.history.push('/downloading');
+				this.props.downloadingItems(tempOptimizedBots);
 			}
 		});
 	}

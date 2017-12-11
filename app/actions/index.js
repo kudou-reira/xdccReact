@@ -8,7 +8,8 @@ import {
   DOWNLOAD_TEMP_QUEUE, 
   REMOVE_DOWNLOAD, 
   CLEAR_DOWNLOAD,
-  START_DOWNLOAD
+  START_DOWNLOAD,
+  DOWNLOADING_ITEMS
 } from "./types";
 // const {BrowserWindow} = require('electron').remote;
 // let downloadWindow = new BrowserWindow({ 
@@ -107,6 +108,13 @@ export const startDownloads = queue => dispatch => {
       payload: downloads
     })
   })
+}
+
+export const downloadingItems = (queue) => {
+  return({
+    type: DOWNLOADING_ITEMS,
+    payload: queue
+  });
 }
 
 

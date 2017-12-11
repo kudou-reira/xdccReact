@@ -15,6 +15,8 @@ process.env.GOOGLE_API_KEY = "AIzaSyCpdUeRmQD8ICPR6IWT-tUGQUBTxdGY404";
 
 let mainWindow = null;
 let downloadWindow = null;
+let downloadingWindow = null;
+
 let forceQuit = false;
 
 const installExtensions = async () => {
@@ -152,6 +154,54 @@ app.on('ready', async () => {
     }
   });
 
+  downloadingWindow = new BrowserWindow({ 
+    width: 1000, 
+    height: 600,
+    minWidth: 640,
+    minHeight: 480,
+    show: false ,
+    nativeWindowOpen: true,
+    title: 'Download List'
+  });
+
+  downloadingWindow.loadURL(url.format({
+    pathname: path.join(__dirname, 'index.html'),
+    protocol: 'file:',
+    slashes: true
+  }));
+
+  downloadingWindow.webContents.on('did-finish-load', () => {
+    // Handle window logic properly on macOS:
+    // 1. App should not terminate if window has been closed
+    // 2. Click on icon in dock should re-open the window
+    // 3. ⌘+Q should close the window and quit the app
+    let windowTitle = 'Downloading';
+    downloadingWindow.setTitle(windowTitle);
+
+    if (process.platform === 'darwin') {
+      downloadingWindow.on('close', function (e) {
+        if (!forceQuit) {
+          e.preventDefault();
+          downloadWindow.hide();
+        }
+      });
+
+      app.on('activate', () => {
+        downloadingWindow.show();
+      });
+      
+      app.on('before-quit', () => {
+        forceQuit = true;
+      });
+    } else {
+      downloadingWindow.on('close', function (e) {
+        e.preventDefault();
+        downloadingWindow.hide();
+        // downloadWindow = null;
+      });
+    }
+  });
+
   // mainWindow.webContents.on('new-window', (event, url, frameName, disposition, options, additionalFeatures) => {
   //   // open window as modal
   //   event.preventDefault()
@@ -189,6 +239,18 @@ app.on('ready', async () => {
           downloadWindow.inspectElement(props.x, props.y);
         }
       }]).popup(downloadWindow);
+    });
+
+    downloadingWindow.webContents.openDevTools();
+
+    // add inspect element on right click menu
+    downloadingWindow.webContents.on('context-menu', (e, props) => {
+      Menu.buildFromTemplate([{
+        label: 'Inspect element',
+        click() {
+          downloadingWindow.inspectElement(props.x, props.y);
+        }
+      }]).popup(downloadingWindow);
     });
   }
 });
@@ -235,10 +297,7 @@ ipcMain.on('fetch:suggestions', (e, suggestion) => {
 });
 
 ipcMain.on('send:queue', (e, queue) => {
-  console.log('this is sendQueue');
-
   sendQueue(queue).then((result) => {
-    console.log("these are sendQueue results", result);
     mainWindow.webContents.send('send:queueDone', result);
     // might have to send to another window too
     downloadWindow.show();
@@ -250,6 +309,8 @@ ipcMain.on('start:downloads', (e, queue) => {
   console.log("this is the start downloads in ipcMain", queue);
   startDownloads(queue).then((result) => {
     downloadWindow.webContents.send('start:downloadsDone', result);
+    downloadingWindow.show();
+    downloadingWindow.webContents.send('start:downloadsDone', result);
   })
 });
 
