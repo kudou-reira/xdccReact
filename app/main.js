@@ -155,7 +155,7 @@ app.on('ready', async () => {
   });
 
   downloadingWindow = new BrowserWindow({ 
-    width: 1000, 
+    width: 750, 
     height: 600,
     minWidth: 640,
     minHeight: 480,
@@ -291,13 +291,31 @@ ipcMain.on('videos:added', (event, videos) => {
 
 ipcMain.on('fetch:suggestions', (e, suggestion) => {
   console.log('start fetchSuggestions');
-  fetchSuggestions(suggestion).then((result) => {
+  var xdccTempSearch;
+  if(isDevelopment) {
+    xdccTempSearch = "http://localhost:8080/xdccTempSearch";
+  }
+
+  else {
+    xdccTempSearch = "https://immense-beyond-13018.herokuapp.com/xdccTempSearch"
+  }
+
+  fetchSuggestions(suggestion, xdccTempSearch).then((result) => {
     mainWindow.webContents.send('fetch:suggestionsDone', result);
   });
 });
 
 ipcMain.on('send:queue', (e, queue) => {
-  sendQueue(queue).then((result) => {
+  var xdccBotSearch;
+  if(isDevelopment) {
+    xdccBotSearch = "http://localhost:8080/xdccBotSearch";
+  }
+
+  else {
+    xdccBotSearch = "https://immense-beyond-13018.herokuapp.com/xdccBotSearch"
+  }
+
+  sendQueue(queue, xdccBotSearch).then((result) => {
     mainWindow.webContents.send('send:queueDone', result);
     // might have to send to another window too
     downloadWindow.show();
@@ -306,8 +324,17 @@ ipcMain.on('send:queue', (e, queue) => {
 });
 
 ipcMain.on('start:downloads', (e, queue) => {
+  var xdccOptimizeDL;
+  if(isDevelopment) {
+    xdccOptimizeDL = "http://localhost:8080/xdccOptimizeDL";
+  }
+
+  else {
+    xdccOptimizeDL = "https://immense-beyond-13018.herokuapp.com/xdccOptimizeDL"
+  }
+
   console.log("this is the start downloads in ipcMain", queue);
-  startDownloads(queue).then((result) => {
+  startDownloads(queue, xdccOptimizeDL).then((result) => {
     downloadWindow.webContents.send('start:downloadsDone', result);
     downloadingWindow.show();
     downloadingWindow.webContents.send('start:downloadsDone', result);

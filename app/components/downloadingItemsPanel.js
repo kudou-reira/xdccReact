@@ -26,6 +26,7 @@ class DownloadingItemsPanel extends Component {
 		return(
 			<div>
 				this is the DownloadingItemsPanel
+				<br />
 				{this.renderMessageCalls()}
 			</div>
 		);
