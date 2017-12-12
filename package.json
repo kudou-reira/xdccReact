@@ -15,10 +15,12 @@
     "electron-remote": "^1.2.0",
     "halogen": "^0.2.0",
     "history": "^4.6.3",
+    "irc": "^0.5.2",
     "jsdom": "^11.3.0",
     "lodash": "^4.17.4",
     "material-ui": "^0.19.4",
     "material-ui-community-icons": "^0.15.0",
+    "progress": "^2.0.0",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-grid-layout": "^0.16.0",
@@ -31,7 +33,8 @@
     "redux": "^3.0.0",
     "redux-localstorage": "^0.4.1",
     "redux-logger": "^3.0.6",
-    "redux-thunk": "^2.2.0"
+    "redux-thunk": "^2.2.0",
+    "xdcc": "^0.2.2"
   },
   "devDependencies": {
     "babel-cli": "^6.22.2",

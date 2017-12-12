@@ -1,6 +1,7 @@
 import path from 'path';
 import url from 'url';
 import {app, crashReporter, BrowserWindow, Menu, ipcMain, shell } from 'electron';
+
 const { requireTaskPool } = require('electron-remote');
 const fetchSuggestions = requireTaskPool(require.resolve('./childProcesses/fetchSuggestions'));
 const sendQueue = requireTaskPool(require.resolve('./childProcesses/sendQueue'));
@@ -338,15 +339,18 @@ ipcMain.on('start:downloads', (e, queue) => {
     downloadWindow.webContents.send('start:downloadsDone', result);
     downloadingWindow.show();
     downloadingWindow.webContents.send('start:downloadsDone', result);
-  })
+  });
+
+  connectXDCC();
+  // might have to use an async parallel module for this
+  // return a "DOWNLOAD FINISHED"
+  // pass in things like message and bot needed
 });
 
 // ipcMain.on('downloadWindow:queue', (e, queue) => {
 //   downloadWindow.show();
 //   downloadWindow.webContents.send('downloadWindow:queueDone', queue);
 // });
-
-
 
  
 var interfaces = os.networkInterfaces();
@@ -362,6 +366,74 @@ for (var k in interfaces) {
 
 console.log(addresses);
 
+function connectXDCC() {
+  var irc = require('xdcc').irc;
+  var ProgressBar = require('progress');
+
+  var path = 'H:\anime';
+  var normalPath = '.'
+  var user = 'desu' + Math.random().toString(36).substr(7, 3);
+  var hostUser = 'ARUTHA-BATCH|720p', pack = 2472, progress;
+
+
+  var client = new irc.Client('irc.rizon.net', user, {
+    channels: ['#HorribleSubs'],
+    userName: user,
+    realName: user,
+    debug: false
+  });
+
+  client.on('join', function(channel, nick, message) {
+    if (nick !== user) return;
+    console.log('Joined', channel);
+    // that period or '.' is the filePath
+    // ask the user to select a filePath
+    client.getXdcc(hostUser, 'xdcc send #' + pack, path);
+  });
+
+  client.on('xdcc-connect', function(meta) {
+    console.log('Connected: ' + meta.ip + ':' + meta.port);
+    progress = new ProgressBar('Downloading... [:bar] :percent, :etas remaining', {
+      incomplete: ' ',
+      total: meta.length,
+      width: 20
+    });
+    console.log("this is the progressBar", progress);
+  });
+
+  var last = 0;
+  client.on('xdcc-data', function(received, details) {
+
+    var percent = (received/details.length)*100
+    console.log("this is details length", details.length);
+    console.log("this is percent received", percent);
+    // how to send this information to ipcRenderer
+    // probably need to make this an object with the title so it can find the file
+    downloadingWindow.webContents.send('connect:XDCC', percent);
+    //
+    progress.tick(received - last);
+    last = received;
+  });
+
+  client.on('xdcc-end', function(received) {
+    console.log('Download completed');
+    // disconnect from server here
+  });
+
+  client.on('notice', function(from, to, message) {
+    if (to == user && from == hostUser) {
+      console.log("[notice]", message);
+    }
+  });
+
+  client.on('error', function(message) {
+    console.error(message);
+  });
+
+  client.addListener('message', function (from, to, message) {
+      console.log(from + ' => ' + to + ': ' + message);
+  });
+}
 
 
 ipcMain.on('folder:open', (event, outputPath) => {

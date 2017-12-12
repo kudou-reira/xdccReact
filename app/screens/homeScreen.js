@@ -103,11 +103,8 @@ class HomeScreen extends Component {
     return (
       <div>
         <h1>This is the homescreen</h1>
-      	<Link to='/downloadList'>
-      		go to downloadscreen
-      	</Link>
       	<button onClick={this.switchScreens.bind(this)}>
-      		withRouter altscreen
+      		xdcc search
       	</button>
 				<ReactGridLayout 
 					className="layout" 

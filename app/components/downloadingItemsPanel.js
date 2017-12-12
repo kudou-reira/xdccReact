@@ -1,4 +1,9 @@
 import React, { Component } from 'react';
+import { ipcRenderer }  from 'electron';
+
+ipcRenderer.on('connect:XDCC',  (event, percent) => {
+	console.log("this is the percent in react panel downloading", percent);
+});
 
 class DownloadingItemsPanel extends Component {
 	constructor(props) {
@@ -16,8 +21,6 @@ class DownloadingItemsPanel extends Component {
 				)
 			});
 		}
-
-
 		return tempMessageCalls
 	}
 
