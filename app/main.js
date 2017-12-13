@@ -402,8 +402,21 @@ function connectXDCC(singleBot) {
 
   var irc = require('xdcc').irc;
   var ProgressBar = require('progress');
+  var path;
 
-  var path = 'H:\anime';
+  // if(isDevelopment) {
+  //   path = 'H:\anime';
+  // }
+
+  // else {
+  //   path = require('path').basename(__dirname);
+  // }
+
+  // path = __dirname;
+
+  path = process.cwd();
+  console.log("this is the path", path);
+
   var normalPath = '.'
   var user = 'desu' + Math.random().toString(36).substr(7, 3);
   // var hostUser = 'NIBL|Arutha';

@@ -29,39 +29,39 @@ class DownloadingItemsPanel extends Component {
 		ipcRenderer.on('connect:XDCC',  (event, dataProgress) => {
 			var tempFile = dataProgress;
 
-			console.log("this is the percent in react panel fileName", dataProgress.fileName);
-			console.log("this is the percent in react panel downloading", dataProgress.percent);
+			// console.log("this is the percent in react panel fileName", dataProgress.fileName);
+			// console.log("this is the percent in react panel downloading", dataProgress.percent);
 
 
 			// this returns undefined
 			var inArray = _.find(this.state.currentDownloads, { fileName: tempFile.fileName });
 
-			console.log("is this file name in current downloads", inArray);
+			// console.log("is this file name in current downloads", inArray);
 
 			if (inArray) {
-				console.log("already in state");
+				// console.log("already in state");
 				// update the state value
 				var tempAll = this.state.currentDownloads;
 				var index = _.findIndex(tempAll, function(item) {
 					return item.fileName === tempFile.fileName;
 				});
-				console.log("this is the index of the found item", index);
+				// console.log("this is the index of the found item", index);
 				tempAll[index].percent = tempFile.percent;
 
 				this.setState({
 					currentDownloads: tempAll
 				}, () => {
-					console.log("this is DownloadingItemsPanel state", this.state.currentDownloads);
+					// console.log("this is DownloadingItemsPanel state", this.state.currentDownloads);
 				});
 			} else {
-				console.log("not in state");
+				// console.log("not in state");
 				var tempAll = this.state.currentDownloads;
 				tempAll.push(tempFile);
 
 				this.setState({
 					currentDownloads: tempAll
 				}, () => {
-					console.log("this is DownloadingItemsPanel state", this.state.currentDownloads);
+					// console.log("this is DownloadingItemsPanel state", this.state.currentDownloads);
 					// now call this with a redux method?
 				})
 			}
