@@ -3,6 +3,8 @@
 
 still very rough, working on using atarashii api for currently airing series. also, trying to connect to irc via node.
 
+file transfer support built in. use at your own risk. illegal file sharing is not condoned.
+
 created with electron, download prototype here and start MyApp https://drive.google.com/file/d/1r3r4l51Ib5wgxgTt5iP7GqYKeQq1lOmM/view?usp=sharing
 
 electron-react-redux-boilerplate fork tailored to personal preference
