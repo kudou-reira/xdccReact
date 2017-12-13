@@ -2,11 +2,13 @@ import path from 'path';
 import url from 'url';
 import {app, crashReporter, BrowserWindow, Menu, ipcMain, shell } from 'electron';
 
+
 const { requireTaskPool } = require('electron-remote');
 const fetchSuggestions = requireTaskPool(require.resolve('./childProcesses/fetchSuggestions'));
 const sendQueue = requireTaskPool(require.resolve('./childProcesses/sendQueue'));
 const startDownloads = requireTaskPool(require.resolve('./childProcesses/startDownloads'));
 
+const async = require('async');
 const axios = require('axios');
 const _ = require('lodash');
 var os = require('os');
@@ -339,12 +341,32 @@ ipcMain.on('start:downloads', (e, queue) => {
     downloadWindow.webContents.send('start:downloadsDone', result);
     downloadingWindow.show();
     downloadingWindow.webContents.send('start:downloadsDone', result);
+
+    console.log("this is the length of result in ipcMain", result.optimizedBots.length);
+    console.log("these are the values in result", result);
+
+    // first change the backend to give back packlist name and number
+
+    // make tasks array and push connectXDCC() to those, then run parallel on them
+    var tasks = [];
+    for (var i = 0; i < result.optimizedBots.length; i++) {
+      var singleBot = result.optimizedBots[i];
+      var singleTask = connectXDCC.bind(null, singleBot)
+      tasks.push(singleTask);
+    }
+
+    console.log("this is the tasks array", tasks);
+
+    async.parallel(tasks, function(err, results) {
+      console.log("this is the tasks parallel");
+    })
+
+    // might have to use an async parallel module for this
+    // return a "DOWNLOAD FINISHED"
+    // pass in things like message and bot needed
+    // connectXDCC();
   });
 
-  connectXDCC();
-  // might have to use an async parallel module for this
-  // return a "DOWNLOAD FINISHED"
-  // pass in things like message and bot needed
 });
 
 // ipcMain.on('downloadWindow:queue', (e, queue) => {
@@ -365,15 +387,30 @@ for (var k in interfaces) {
 }
 
 console.log(addresses);
+var fullPath = __dirname;
+console.log("this is path", fullPath);
 
-function connectXDCC() {
+function connectXDCC(singleBot) {
+
+  // console.log("this is singleBot in connect xdcc", singleBot);
+
+  console.log("this is singleBot bot to use", singleBot.BotToUse);
+  console.log("this is singleBot pack number", singleBot.PackNumber);
+
+  // console.log("this is the packName in connectXDCC", packName);
+  // console.log("this is the packNumber in connectXDCC", packNumber);
+
   var irc = require('xdcc').irc;
   var ProgressBar = require('progress');
 
   var path = 'H:\anime';
   var normalPath = '.'
   var user = 'desu' + Math.random().toString(36).substr(7, 3);
-  var hostUser = 'ARUTHA-BATCH|720p', pack = 2472, progress;
+  // var hostUser = 'NIBL|Arutha';
+  // var pack = 5252;
+  var hostUser = singleBot.BotToUse;
+  var pack = singleBot.PackNumber;
+  var progress;
 
 
   var client = new irc.Client('irc.rizon.net', user, {
@@ -398,18 +435,26 @@ function connectXDCC() {
       total: meta.length,
       width: 20
     });
-    console.log("this is the progressBar", progress);
+    // console.log("this is the progressBar", progress);
   });
 
   var last = 0;
   client.on('xdcc-data', function(received, details) {
 
+    // console.log("this is deatails", details);
+    // console.log("this is details length", details.length);
+    // console.log("this is percent received", percent);
+
+
     var percent = (received/details.length)*100
-    console.log("this is details length", details.length);
-    console.log("this is percent received", percent);
+
+    var dataProgress = {
+      fileName: details.file,
+      percent: percent
+    }
     // how to send this information to ipcRenderer
     // probably need to make this an object with the title so it can find the file
-    downloadingWindow.webContents.send('connect:XDCC', percent);
+    downloadingWindow.webContents.send('connect:XDCC', dataProgress);
     //
     progress.tick(received - last);
     last = received;
@@ -418,6 +463,9 @@ function connectXDCC() {
   client.on('xdcc-end', function(received) {
     console.log('Download completed');
     // disconnect from server here
+    client.disconnect('disconnecting from server', (message) => {
+      console.log("disconnecting from server", message)
+    })
   });
 
   client.on('notice', function(from, to, message) {
@@ -433,6 +481,7 @@ function connectXDCC() {
   client.addListener('message', function (from, to, message) {
       console.log(from + ' => ' + to + ': ' + message);
   });
+
 }
 
 
