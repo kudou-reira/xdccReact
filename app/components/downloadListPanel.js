@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {List, ListItem} from 'material-ui/List';
 import Subheader from 'material-ui/Subheader';
 import RaisedButton from 'material-ui/RaisedButton';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { connect } from 'react-redux';
 import * as actions from '../actions';
 
@@ -10,13 +11,17 @@ class DownloadListPanel extends Component {
 		super(props);
 		this.state = {
 			open: false,
-			downloadBots: []
+			downloadBots: [],
+      copied: false,
+      valueCopied: ''
 		}
 
 		this.handleNestedListToggle = this.handleNestedListToggle.bind(this);
 		this.removeFromDownload = this.removeFromDownload.bind(this);
 		this.clearAllDownloads = this.clearAllDownloads.bind(this);
 		this.startDownloads = this.startDownloads.bind(this);
+    this.onMessageClicked = this.onMessageClicked.bind(this);
+    this.setCopy = this.setCopy.bind(this);
 	}
 
 	handleNestedListToggle(item) {
@@ -39,13 +44,46 @@ class DownloadListPanel extends Component {
   	this.props.startDownloads(this.props.list.download);
   }
 
+  onMessageClicked(message) {
+    this.setState({
+      valueCopied: message
+    });
+  }
+
+  setCopy() {
+    this.setState({ copied: true });
+    setTimeout(function(){
+         this.setState({copied: false});
+    }.bind(this),2000);
+  }
+
+  renderIconButton(message) {
+    return(
+      <div>
+        <CopyToClipboard 
+          text={this.state.valueCopied}
+          onCopy={ () => this.setCopy() }
+        >
+          <RaisedButton 
+            label="Copy message call" 
+            style={{marginTop: 5.5, marginRight: 5}}
+            onClick={() => this.onMessageClicked(message)} 
+          />
+        </CopyToClipboard>
+      </div>
+    );
+  }
+
   generateDownloadDetails(downloadDetails) {
   	var downloadContent = downloadDetails.BotSpecies.map((details, index) => {
   		return(
   			<ListItem
   				key={index}
-  				primaryText={'hello'}
+          rightIconButton={
+            this.renderIconButton(details.MessageCall)
+          }
   			>
+          {this.state.copied ? <span style={{color: 'red'}}>Copied.</span> : null}
   				{this.generateIndividualBotDetails(details)}
   			</ListItem>
   		);

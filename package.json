@@ -23,6 +23,7 @@
     "material-ui-community-icons": "^0.15.0",
     "progress": "^2.0.0",
     "react": "^15.6.1",
+    "react-copy-to-clipboard": "^5.0.1",
     "react-debounce-render": "^4.0.0",
     "react-dom": "^15.6.1",
     "react-grid-layout": "^0.16.0",

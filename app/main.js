@@ -351,11 +351,18 @@ ipcMain.on('start:downloads', (e, queue) => {
     var tasks = [];
     for (var i = 0; i < result.optimizedBots.length; i++) {
       var singleBot = result.optimizedBots[i];
-      var singleTask = connectXDCC.bind(null, singleBot)
+      var singleTask = startXDCC.bind(null, singleBot)
       tasks.push(singleTask);
     }
 
+    // maybe, just connect first, then run xdcc
+
+
     console.log("this is the tasks array", tasks);
+
+    console.log("going to start connection to irc");
+
+    // connectXDCC();
 
     async.parallel(tasks, function(err, results) {
       console.log("this is the tasks parallel");
@@ -390,7 +397,20 @@ console.log(addresses);
 var fullPath = __dirname;
 console.log("this is path", fullPath);
 
-function connectXDCC(singleBot) {
+// function connectXDCC() {
+//    var irc = require('xdcc').irc;
+
+//    var user = 'desu' + Math.random().toString(36).substr(7, 3);
+
+//    var client = new irc.Client('irc.rizon.net', user, {
+//     channels: ['#HorribleSubs'],
+//     userName: user,
+//     realName: user,
+//     debug: false
+//   });
+// }
+
+function startXDCC(singleBot) {
 
   // console.log("this is singleBot in connect xdcc", singleBot);
 
@@ -404,20 +424,22 @@ function connectXDCC(singleBot) {
   var ProgressBar = require('progress');
   var path;
 
-  // if(isDevelopment) {
-  //   path = 'H:\anime';
-  // }
+  if(isDevelopment) {
+    path = 'H:\anime';
+  }
 
-  // else {
-  //   path = require('path').basename(__dirname);
-  // }
+  else {
+    // path = process.cwd();
+    // path = require('path').basename(__dirname);
+    path = 'H:\anime';
+  }
 
   // path = __dirname;
 
-  path = process.cwd();
+
   console.log("this is the path", path);
 
-  var normalPath = '.'
+  // var normalPath = '.'
   var user = 'desu' + Math.random().toString(36).substr(7, 3);
   // var hostUser = 'NIBL|Arutha';
   // var pack = 5252;
@@ -476,9 +498,9 @@ function connectXDCC(singleBot) {
   client.on('xdcc-end', function(received) {
     console.log('Download completed');
     // disconnect from server here
-    client.disconnect('disconnecting from server', (message) => {
-      console.log("disconnecting from server", message)
-    })
+    // client.disconnect('disconnecting from server', (message) => {
+    //   console.log("disconnecting from server", message)
+    // })
   });
 
   client.on('notice', function(from, to, message) {
