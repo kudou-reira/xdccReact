@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
+import _ from 'lodash';
 import {List, ListItem} from 'material-ui/List';
 import Subheader from 'material-ui/Subheader';
 import RaisedButton from 'material-ui/RaisedButton';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { connect } from 'react-redux';
 import * as actions from '../actions';
+
+import Clipboard from './clipboard';
 
 class DownloadListPanel extends Component {
 	constructor(props) {
@@ -13,7 +16,7 @@ class DownloadListPanel extends Component {
 			open: false,
 			downloadBots: [],
       copied: false,
-      valueCopied: ''
+      valueCopied: []
 		}
 
 		this.handleNestedListToggle = this.handleNestedListToggle.bind(this);
@@ -45,9 +48,20 @@ class DownloadListPanel extends Component {
   }
 
   onMessageClicked(message) {
-    this.setState({
-      valueCopied: message
-    });
+    //alter this to add to an array
+    var tempHoldMessages = this.state.valueCopied;
+
+    var inArr = _.includes(tempHoldMessages, message);
+
+    console.log("this is inArr", inArr);
+
+    if(inArr === false) {
+      tempHoldMessages.push(message);
+
+      this.setState({
+        valueCopied: tempHoldMessages
+      });
+    }
   }
 
   setCopy() {
@@ -83,7 +97,6 @@ class DownloadListPanel extends Component {
             this.renderIconButton(details.MessageCall)
           }
   			>
-          {this.state.copied ? <span style={{color: 'red'}}>Copied.</span> : null}
   				{this.generateIndividualBotDetails(details)}
   			</ListItem>
   		);
@@ -151,27 +164,64 @@ class DownloadListPanel extends Component {
 					  		onClick={() => this.removeFromDownload(download)} 
 					  	/>
 	          }
-	        />
+	        >
+          </ListItem>
 				);
 			});
 		}
 		return downloadList;
 	}
 
+  renderFilledOrNot() {
+    var returnDiv;
+    if(this.state.valueCopied.length > 0) {
+      returnDiv = (
+        <div id="wrapper">
+          <div id="left80">
+            This is the download list
+            {this.renderClearButton()}
+            {this.renderStartButton()}
+            <div>
+              <List>
+                <Subheader>Download List</Subheader>
+                {this.renderDownloadList()}
+              </List>
+            </div>
+          </div>
+          <div id="right">
+            <Clipboard />
+          </div>
+        </div>
+      );
+    }
+
+    else {
+      returnDiv = (
+        <div>
+          This is the download list
+          {this.renderClearButton()}
+          {this.renderStartButton()}
+          <div>
+            <List>
+              <Subheader>Download List</Subheader>
+              {this.renderDownloadList()}
+            </List>
+          </div>
+        </div>
+      );
+    }
+
+    return returnDiv
+  }
+
 	render() {
 		console.log("this is the downloadlist panel", this.props);
+    console.log("these are the copied calls", this.state.valueCopied);
 		return(
-			<div>
-				This is the download list
-				{this.renderClearButton()}
-				{this.renderStartButton()}
-				<div>
-					<List>
-		        <Subheader>Download List</Subheader>
-		        {this.renderDownloadList()}
-		      </List>
-				</div>
-			</div>
+      <div>
+        {this.state.copied ? <span style={{color: 'red'}}>Copied.</span> : null}
+  			{this.renderFilledOrNot()}
+      </div>
 		);
 	}
 }

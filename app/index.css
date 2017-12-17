@@ -21,6 +21,10 @@ h1 {
   flex: 0 0 69%;
 }
 
+#left80 {
+  flex: 0 0 80%;
+}
+
 #leftEqual {
 	flex: 0 0 50%;
 }
