@@ -345,42 +345,26 @@ ipcMain.on('start:downloads', (e, queue) => {
     console.log("this is the length of result in ipcMain", result.optimizedBots.length);
     console.log("these are the values in result", result);
 
-    // first change the backend to give back packlist name and number
 
-    // make tasks array and push connectXDCC() to those, then run parallel on them
     var tasks = [];
     for (var i = 0; i < result.optimizedBots.length; i++) {
       var singleBot = result.optimizedBots[i];
-      var singleTask = startXDCC.bind(null, singleBot)
+      // arguments are not bound to startXDCC!!!!
+      var singleTask = startXDCC.bind(null, singleBot);
       tasks.push(singleTask);
     }
-
-    // maybe, just connect first, then run xdcc
-
 
     console.log("this is the tasks array", tasks);
 
     console.log("going to start connection to irc");
 
-    // connectXDCC();
 
     async.parallel(tasks, function(err, results) {
       console.log("this is the tasks parallel");
     })
-
-    // might have to use an async parallel module for this
-    // return a "DOWNLOAD FINISHED"
-    // pass in things like message and bot needed
-    // connectXDCC();
   });
 
 });
-
-// ipcMain.on('downloadWindow:queue', (e, queue) => {
-//   downloadWindow.show();
-//   downloadWindow.webContents.send('downloadWindow:queueDone', queue);
-// });
-
  
 var interfaces = os.networkInterfaces();
 var addresses = [];
@@ -397,31 +381,26 @@ console.log(addresses);
 var fullPath = __dirname;
 console.log("this is path", fullPath);
 
+
 // function connectXDCC() {
-//    var irc = require('xdcc').irc;
-
-//    var user = 'desu' + Math.random().toString(36).substr(7, 3);
-
-//    var client = new irc.Client('irc.rizon.net', user, {
-//     channels: ['#HorribleSubs'],
-//     userName: user,
-//     realName: user,
-//     debug: false
-//   });
+//   var user = 'desu' + Math.random().toString(36).substr(7, 3);
+//   return user;
 // }
 
 function startXDCC(singleBot) {
 
   // console.log("this is singleBot in connect xdcc", singleBot);
 
-  console.log("this is singleBot bot to use", singleBot.BotToUse);
-  console.log("this is singleBot pack number", singleBot.PackNumber);
+  // console.log("this is singleBot bot to use", singleBot.BotToUse);
+  // console.log("this is singleBot pack number", singleBot.PackNumber);
 
   // console.log("this is the packName in connectXDCC", packName);
   // console.log("this is the packNumber in connectXDCC", packNumber);
 
-  var irc = require('xdcc').irc;
   var ProgressBar = require('progress');
+  // var user = params;
+
+  var irc = require('xdcc').irc;
   var path;
 
   if(isDevelopment) {
@@ -440,9 +419,12 @@ function startXDCC(singleBot) {
   console.log("this is the path", path);
 
   // var normalPath = '.'
-  var user = 'desu' + Math.random().toString(36).substr(7, 3);
   // var hostUser = 'NIBL|Arutha';
   // var pack = 5252;
+
+
+  var user = 'desu' + Math.random().toString(36).substr(7, 3);
+
   var hostUser = singleBot.BotToUse;
   var pack = singleBot.PackNumber;
   var progress;
@@ -458,8 +440,6 @@ function startXDCC(singleBot) {
   client.on('join', function(channel, nick, message) {
     if (nick !== user) return;
     console.log('Joined', channel);
-    // that period or '.' is the filePath
-    // ask the user to select a filePath
     client.getXdcc(hostUser, 'xdcc send #' + pack, path);
   });
 
@@ -480,7 +460,6 @@ function startXDCC(singleBot) {
     // console.log("this is details length", details.length);
     // console.log("this is percent received", percent);
 
-
     var percent = (received/details.length)*100
 
     var dataProgress = {
@@ -498,9 +477,7 @@ function startXDCC(singleBot) {
   client.on('xdcc-end', function(received) {
     console.log('Download completed');
     // disconnect from server here
-    // client.disconnect('disconnecting from server', (message) => {
-    //   console.log("disconnecting from server", message)
-    // })
+    client.disconnect('disconnecting from server');
   });
 
   client.on('notice', function(from, to, message) {
