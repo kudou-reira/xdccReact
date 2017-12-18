@@ -337,31 +337,37 @@ ipcMain.on('start:downloads', (e, queue) => {
   }
 
   console.log("this is the start downloads in ipcMain", queue);
+
   startDownloads(queue, xdccOptimizeDL).then((result) => {
     downloadWindow.webContents.send('start:downloadsDone', result);
+    // create irc client here?
     downloadingWindow.show();
     downloadingWindow.webContents.send('start:downloadsDone', result);
 
+    // result has to send back the chopped up bots into 2
     console.log("this is the length of result in ipcMain", result.optimizedBots.length);
     console.log("these are the values in result", result);
 
 
-    var tasks = [];
-    for (var i = 0; i < result.optimizedBots.length; i++) {
-      var singleBot = result.optimizedBots[i];
-      // arguments are not bound to startXDCC!!!!
-      var singleTask = startXDCC.bind(null, singleBot);
-      tasks.push(singleTask);
-    }
+    // var tasks = [];
+    // for (var i = 0; i < result.optimizedBots.length; i++) {
+    //   var singleBot = result.optimizedBots[i];
+    //   // arguments are not bound to startXDCC!!!!
+    //   var singleTask = startXDCC.bind(null, singleBot);
+    //   tasks.push(singleTask);
+    // }
 
-    console.log("this is the tasks array", tasks);
+    // console.log("this is the tasks array", tasks);
+    
 
-    console.log("going to start connection to irc");
+    // now that you have the tasks array, cut it all up by twos
+    // maybe should cut it up in the back end
 
+    // console.log("going to start connection to irc");
 
-    async.parallel(tasks, function(err, results) {
-      console.log("this is the tasks parallel");
-    })
+    // async.parallel(tasks, function(err, results) {
+    //   console.log("this is the tasks parallel");
+    // });
   });
 
 });
@@ -383,8 +389,16 @@ console.log("this is path", fullPath);
 
 
 // function connectXDCC() {
+//   var irc = require('xdcc').irc;
 //   var user = 'desu' + Math.random().toString(36).substr(7, 3);
-//   return user;
+//   var client = new irc.Client('irc.rizon.net', user, {
+//     channels: ['#HorribleSubs'],
+//     userName: user,
+//     realName: user,
+//     debug: false
+//   });
+
+//   return client;
 // }
 
 function startXDCC(singleBot) {
@@ -427,15 +441,24 @@ function startXDCC(singleBot) {
 
   var hostUser = singleBot.BotToUse;
   var pack = singleBot.PackNumber;
+  var channelToJoin = '#' + singleBot.ChannelToJoin;
   var progress;
 
 
   var client = new irc.Client('irc.rizon.net', user, {
-    channels: ['#HorribleSubs'],
+    channels: [channelToJoin],
     userName: user,
     realName: user,
     debug: false
   });
+
+  // just call client.getXdcc without putting it in the client.on('join')
+  // connect in another function, then do whatever
+  // get rid of the client.on join socket then?
+  // move client.on join into the connectXDCC method
+  // need to pass the client as a param or make it global
+
+  // client.getXdcc(hostUser, 'xdcc send #' + pack, path);
 
   client.on('join', function(channel, nick, message) {
     if (nick !== user) return;
@@ -468,6 +491,8 @@ function startXDCC(singleBot) {
     }
     // how to send this information to ipcRenderer
     // probably need to make this an object with the title so it can find the file
+
+    // maybe rate limit this call
     downloadingWindow.webContents.send('connect:XDCC', dataProgress);
     //
     progress.tick(received - last);
@@ -477,7 +502,9 @@ function startXDCC(singleBot) {
   client.on('xdcc-end', function(received) {
     console.log('Download completed');
     // disconnect from server here
-    client.disconnect('disconnecting from server');
+    client.disconnect('disconnecting from server', () => {
+      console.log('disconnecting!!!');
+    });
   });
 
   client.on('notice', function(from, to, message) {
@@ -493,7 +520,6 @@ function startXDCC(singleBot) {
   client.addListener('message', function (from, to, message) {
       console.log(from + ' => ' + to + ': ' + message);
   });
-
 }
 
 
