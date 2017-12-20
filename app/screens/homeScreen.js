@@ -6,6 +6,8 @@ import { ipcRenderer }  from 'electron';
 
 import PocketPanel from '../components/pocketPanel';
 import WeatherPanel from '../components/weatherPanel';
+import AnimeChartPanel from '../components/animeChartPanel';
+
 import { Link } from 'react-router-dom'
 import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
@@ -95,10 +97,10 @@ class HomeScreen extends Component {
 	}
 
   render() {
-  	var layout = [
-			{i: 'weatherPanel', x: 0, y: 0, w: 3, h: 4},
-			{i: 'pocketPanel', x: 9, y: 7, w: 3, h: 3},
-	    ];
+  	// var layout = [
+			// {i: 'weatherPanel', x: 0, y: 0, w: 3, h: 4},
+			// {i: 'pocketPanel', x: 9, y: 7, w: 3, h: 3},
+	  //   ];
 
     return (
       <div>
@@ -106,20 +108,7 @@ class HomeScreen extends Component {
       	<button onClick={this.switchScreens.bind(this)}>
       		xdcc search
       	</button>
-				<ReactGridLayout 
-					className="layout" 
-					layout={layout}
-					cols={12}
-					rowHeight={30}
-					width={this.state.widthWindow}
-				>
-	        <div key="weatherPanel">
-	            <PocketPanel />
-	        </div>
-	        <div key="pocketPanel">
-	        	<WeatherPanel />
-	        </div>
-	    	</ReactGridLayout>
+      	<AnimeChartPanel />
       </div>
     );
   }
@@ -132,3 +121,28 @@ class HomeScreen extends Component {
 // }
 // export default withRouter(HomeScreen);
 export default connect(null, actions)(withRouter(HomeScreen));
+
+// unused code
+
+// return (
+//       <div>
+//         <h1>This is the homescreen</h1>
+//       	<button onClick={this.switchScreens.bind(this)}>
+//       		xdcc search
+//       	</button>
+// 				<ReactGridLayout 
+// 					className="layout" 
+// 					layout={layout}
+// 					cols={12}
+// 					rowHeight={30}
+// 					width={this.state.widthWindow}
+// 				>
+// 	        <div key="weatherPanel">
+// 	            <PocketPanel />
+// 	        </div>
+// 	        <div key="pocketPanel">
+// 	        	<WeatherPanel />
+// 	        </div>
+// 	    	</ReactGridLayout>
+//       </div>
+//     );

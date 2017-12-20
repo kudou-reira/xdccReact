@@ -4,6 +4,7 @@ import {app, crashReporter, BrowserWindow, Menu, ipcMain, shell } from 'electron
 
 
 const { requireTaskPool } = require('electron-remote');
+const fetchAnime = requireTaskPool(require.resolve('./childProcesses/fetchAnime'));
 const fetchSuggestions = requireTaskPool(require.resolve('./childProcesses/fetchSuggestions'));
 const sendQueue = requireTaskPool(require.resolve('./childProcesses/sendQueue'));
 const startDownloads = requireTaskPool(require.resolve('./childProcesses/startDownloads'));
@@ -289,6 +290,22 @@ ipcMain.on('videos:added', (event, videos) => {
       // results is an array of information
       mainWindow.webContents.send('metadata:complete', results);
     });
+});
+
+ipcMain.on('fetch:anime', (e, season, year) => {
+  console.log("this is fetchAnime", season, year);
+  var xdccAnilist;
+  if(isDevelopment) {
+    xdccAnilist = "http://localhost:8080/xdccAnilist";
+  }
+
+  else {
+    xdccAnilist = "https://immense-beyond-13018.herokuapp.com/xdccAnilist"
+  }
+
+  fetchAnime(season, year, xdccAnilist).then((result) => {
+    mainWindow.webContents.send('fetch:animeDone', result);
+  });
 });
 
 
