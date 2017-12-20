@@ -366,13 +366,45 @@ ipcMain.on('start:downloads', (e, queue) => {
     console.log("these are the values in result", result);
 
 
-    // var tasks = [];
-    // for (var i = 0; i < result.optimizedBots.length; i++) {
-    //   var singleBot = result.optimizedBots[i];
-    //   // arguments are not bound to startXDCC!!!!
-    //   var singleTask = startXDCC.bind(null, singleBot);
-    //   tasks.push(singleTask);
-    // }
+    var containerTasks = [];
+    var allTasks = [];
+    for (var i = 0; i < result.optimizedBots.length; i++) {
+      for (var j = 0; j < result.optimizedBots[i].length; j++) {
+        var singleBot = result.optimizedBots[i][j];
+        var singleTask = startXDCC.bind(null, singleBot);
+        containerTasks.push(singleTask);
+      }
+      allTasks.push(containerTasks)
+      containerTasks = [];
+    }
+
+    console.log("this is allTasks", allTasks);
+    // all tasks has pairs of tasks now
+
+    var allParallel = [];
+
+    for(var k = 0; k < allTasks.length; k++) {
+      var singleParallel = async.parallel(allTasks[k], function(err, results) {
+        console.log("this is the tasks parallel");
+        console.log("these are the results in tasks parallel", results);
+      });
+      allParallel.push(singleParallel);
+    }
+
+    console.log("this is all parallel", allParallel);
+
+    async.series(setTimeout(allParallel, 150000), function(err, results) {
+      console.log("this is the async series");
+      console.log("this is the async series results", results);
+    });
+
+    async
+
+
+      //     var singleBot = result.optimizedBots[i];
+      // // arguments are not bound to startXDCC!!!!
+      // var singleTask = startXDCC.bind(null, singleBot);
+      // tasks.push(singleTask);
 
     // console.log("this is the tasks array", tasks);
     
@@ -418,7 +450,7 @@ console.log("this is path", fullPath);
 //   return client;
 // }
 
-function startXDCC(singleBot) {
+function startXDCC(singleBot, callback) {
 
   // console.log("this is singleBot in connect xdcc", singleBot);
 
@@ -519,6 +551,7 @@ function startXDCC(singleBot) {
   client.on('xdcc-end', function(received) {
     console.log('Download completed');
     // disconnect from server here
+    callback(null, 1);
     client.disconnect('disconnecting from server', () => {
       console.log('disconnecting!!!');
     });

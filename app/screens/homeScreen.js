@@ -104,10 +104,14 @@ class HomeScreen extends Component {
 
     return (
       <div>
-        <h1>This is the homescreen</h1>
-      	<button onClick={this.switchScreens.bind(this)}>
-      		xdcc search
-      	</button>
+        <h1 className="center">
+        	This is the homescreen
+        </h1>
+        <div id="alignRight">
+	      	<button onClick={this.switchScreens.bind(this)}>
+	      		xdcc search
+	      	</button>
+	    	</div>
       	<AnimeChartPanel />
       </div>
     );

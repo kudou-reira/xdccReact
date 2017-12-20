@@ -12,12 +12,29 @@ class AnimeChartPanel extends Component {
 		if(this.props.animeList.anime !== null) {
 			anime = this.props.animeList.anime.media.map((anime) => {
 				return(
-						<div className="card">
-							{anime.title.userPreferred}
+						<div 
+							className="card"
+							key={anime.id}
+						>
+							<div id="wide">
+								<div className="center">
+									<img src={anime.coverImage.large} />
+								</div>
+							</div>
+							<div id="narrow">
+								<div className="center">
+									{anime.title.userPreferred}
+								</div>
+								<div>
+									Summary
+								</div>
+							</div>
 						</div>
 				);
 			});
-		} else if (this.props.animeList.anime === null) {
+		} 
+
+		else if (this.props.animeList.anime === null) {
 			anime = (
 				<div>
 					Loading...
@@ -31,7 +48,9 @@ class AnimeChartPanel extends Component {
 	render() {
 		return(
 			<div>
-				this is the anime chart
+				<div className="center">
+					this is the anime chart
+				</div>
 				<div className="cards">
 					{this.renderAnimeChart()}
 				</div>
