@@ -393,12 +393,49 @@ ipcMain.on('start:downloads', (e, queue) => {
 
     console.log("this is all parallel", allParallel);
 
-    async.series(setTimeout(allParallel, 150000), function(err, results) {
-      console.log("this is the async series");
-      console.log("this is the async series results", results);
+    // async.series(allParallel, function(err, results) {
+    //   console.log("this is the async series");
+    //   console.log("this is the async series results", results);
+    // });
+
+
+    async.eachSeries(allParallel, function (eachParallel, done) {
+        setTimeout(function () {
+           eachParallel;
+           done();
+        }, 300000);
+    }, function (err) {
+      
     });
 
-    async
+
+
+
+
+
+
+
+    // trying out whilst
+
+    // var i = 0;
+    // async.whilst(
+    //   // test to perform next iteration
+    //   function() { return i <= allParallel.length-1; },
+
+    //   // iterated function
+    //   // call `innerCallback` when the iteration is done
+    //   function(innerCallback) {
+    //       allParallel[i];
+
+    //       setTimeout(function() { i++; innerCallback(); }, 300000);
+    //   },
+
+    //   // when all iterations are done, call `callback`
+    //   callback
+    // );
+
+
+
 
 
       //     var singleBot = result.optimizedBots[i];
@@ -436,20 +473,6 @@ console.log(addresses);
 var fullPath = __dirname;
 console.log("this is path", fullPath);
 
-
-// function connectXDCC() {
-//   var irc = require('xdcc').irc;
-//   var user = 'desu' + Math.random().toString(36).substr(7, 3);
-//   var client = new irc.Client('irc.rizon.net', user, {
-//     channels: ['#HorribleSubs'],
-//     userName: user,
-//     realName: user,
-//     debug: false
-//   });
-
-//   return client;
-// }
-
 function startXDCC(singleBot, callback) {
 
   // console.log("this is singleBot in connect xdcc", singleBot);
@@ -461,7 +484,6 @@ function startXDCC(singleBot, callback) {
   // console.log("this is the packNumber in connectXDCC", packNumber);
 
   var ProgressBar = require('progress');
-  // var user = params;
 
   var irc = require('xdcc').irc;
   var path;
