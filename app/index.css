@@ -22,12 +22,26 @@ body {
 }
 
 p {
-	font-size: 14px;
+	font-size: 16px;
 	font-family: 'Source Sans Pro', sans-serif;
+  margin: 0;
+  font-weight: 500;
 }
 
-#bottomMargin {
-  margin-bottom: 1%;
+.bottomMargin {
+  margin-bottom: 2%;
+}
+
+.topMargin {
+  margin-top: 1.5%;
+}
+
+.topMargin2 {
+  margin-top: 4.5%;
+}
+
+.topMargin3 {
+  margin-top: 10.5%;
 }
 
 #topMargin {
@@ -39,13 +53,33 @@ p {
 	margin-right: 1.5%;
 }
 
+.alignRight {
+  text-align: right;
+  margin-right: 1.5%;
+}
+
+#alignLeft {
+  float: left;
+  clear: left;
+}
+
+.groupDrop {
+  display: flex;
+  justify-content: space-between;
+}
+
 #wrapper {
   display: flex;
+  justify-content: center;
 }
 
 #wrapper2 {
 	display: flex;
-	justify-content: space-around;;
+	justify-content: space-around;
+}
+
+#wrapper3 {
+  justify-content: center;
 }
 
 #left {
@@ -80,6 +114,44 @@ p {
 	float: right;
 }
 
+#floatRight2 {
+  float: right;
+  clear: right;
+}
+
+#text {
+  display: -webkit-box;   
+  display: -moz-box; 
+  display: -ms-flexbox;  
+  display: -webkit-flex;
+  display: flex;  
+  -webkit-justify-content: center;
+  -moz-justify-content: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -moz-align-items: center;
+  align-items: center;
+  -webkit-flex-wrap: wrap;
+  -moz-flex-wrap: wrap;
+  flex-wrap: wrap;
+}
+
+#dropdown {
+  display: -webkit-box;   
+  display: -moz-box; 
+  display: -ms-flexbox;  
+  display: -webkit-flex;
+  display: flex;  
+  -webkit-justify-content: flex-end;
+  -moz-justify-content: flex-end;
+  justify-content: flex-end;
+  -webkit-align-items: center;
+  -moz-align-items: center;
+  align-items: center;
+  -webkit-flex-wrap: wrap;
+  -moz-flex-wrap: wrap;
+  flex-wrap: wrap;
+}
 
 .cards {
    display: flex;
@@ -88,19 +160,52 @@ p {
 }
 
 .card {
-    flex: 1 0 500px;
-    box-sizing: border-box;
-    margin: 1rem .25em;
+  flex: 1 0 500px;
+  box-sizing: border-box;
+  margin: 1rem .25em;
 }
 
 #narrow {
   float: right;
   width: 57%;
-  background: lightblue;
 }
 
 #wide {
+  justify-content: center;
   float: left;
   width: 40%;
-  background: lightgreen;
+}
+
+#wideVert {
+  float: left;
+  width: 40%;
+  justify-content: center
+}
+
+#parentDiv{
+  position: relative;
+}
+
+#childDiv {
+  position: absolute;
+  bottom: 0px;
+}
+
+
+.imgRound {
+  border-radius: 5%;
+}
+
+.cardBorder {
+  border:solid black;
+  border-width:0.5px;
+  border-radius: 5%;
+  padding-top: 1.0%;
+  padding-bottom: 1.25%;
+  padding-left: 0.5%;
+  padding-right: 0.5%;
+}
+
+#source {
+  margin-top: 1.5%;
 }
