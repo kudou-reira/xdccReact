@@ -13,6 +13,8 @@ import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
 import * as actions from '../actions';
 
+import RaisedButton from 'material-ui/RaisedButton';
+
 const windowID = require('electron').remote.getCurrentWindow().id;
 
 // import '../layout/reactGrid/styles.css';
@@ -108,9 +110,11 @@ class HomeScreen extends Component {
         	This is the homescreen
         </h1>
         <div id="alignRight">
-	      	<button onClick={this.switchScreens.bind(this)}>
-	      		xdcc search
-	      	</button>
+	      	<RaisedButton 
+	      		onClick={this.switchScreens.bind(this)} 
+	      		style={{ marginRight: 5, marginLeft: 15}} 
+	      		label="xdcc search"
+	      	/>
 	    	</div>
       	<AnimeChartPanel />
       </div>

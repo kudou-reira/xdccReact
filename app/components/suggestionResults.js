@@ -159,7 +159,6 @@ class SuggestionResults extends Component {
   		return(
   			<ListItem
   				key={index}
-  				primaryText={'hello'}
   			>
   				{this.generateLabels(content)}
   			</ListItem>
@@ -228,7 +227,22 @@ class SuggestionResults extends Component {
   	else {
   		return(
   			<div>
+          <br />
   				Please enter a query
+          <br />
+          <br />
+          <div id="text">
+            <div>
+              <p>Example: </p>
+            </div>
+            <div>
+              &nbsp;3-gatsu no Lion 7, 8 [720] for episodes 7, 8 and 720p quality
+            </div>
+          </div>
+          <div>
+            You may also query using a '-' for multiple episodes (1-8) ex. 3-gatsu no Lion 1-8 [720]
+          </div>
+          <br />
   			</div>
   		);
   	}
@@ -261,6 +275,7 @@ class SuggestionResults extends Component {
 			<div>
 				<div className="center">
 					{this.renderValid()}
+          <br />
 					"this is the suggestion results window"
 				</div>
         {this.renderListSuggestion()}

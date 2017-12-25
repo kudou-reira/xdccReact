@@ -20,7 +20,7 @@ class AnimeChartPanel extends Component {
 			series: true,
 			sort: 'alphabetically',
 			type: 'tv',
-			order: 'ascending',
+			order: 'descending',
 			season: 'fall',
 			startDate: this.findCurrentDate("string")
 		}
@@ -37,10 +37,29 @@ class AnimeChartPanel extends Component {
 	}
 
 	renderAnimeOrOtherChart() {
-		var anime;
+		var anime = this.props.animeList.anime.media;
 		console.log("inside anilist is not null");
+		console.log("this is sort", this.state.sort);
+		switch(this.state.sort) {
+			case 'alphabetically':
+				anime = this.alphabetize(anime);
+				break;
+			case 'score':
+				anime = this.score(anime);
+				break;
+			case 'popularity':
+				anime = this.popularity(anime);
+				break;
+			case 'next episode':
+				anime = this.nextEpisode(anime);
+				break;
+			case 'series length':
+				anime = this.seriesLength(anime);
+				break;
+		}
+
 		if(this.state.type === 'tv') {
-			anime = this.props.animeList.anime.media.filter((media) => {
+			anime = anime.filter((media) => {
 				return media.format === "TV";
 			});
 
@@ -48,12 +67,107 @@ class AnimeChartPanel extends Component {
 		}
 
 		else if (this.state.type === 'single') {
-			anime = this.props.animeList.anime.media.filter((media) => {
-				return media.format === "MOVIE" || media.format === "OVA";
+			anime = anime.filter((media) => {
+				return media.format === "MOVIE" || media.format === "OVA" || media.format === "SPECIAL";
 			});
 
 			anime = this.renderAnimeSeries(anime);
 		}
+		return anime;
+	}
+
+	seriesLength(anime) {
+		if(this.state.order === 'descending') {
+			anime.sort(function(a, b){
+				return b.episodes - a.episodes;
+			});
+		}
+
+		else if(this.state.order === 'ascending') {
+			anime.sort(function(a, b){
+				return a.episodes - b.episodes;
+			});
+		}
+
+		return anime;
+	}
+
+	nextEpisode(anime) {
+		if(this.state.order === 'descending') {
+			anime.sort(function(a, b){
+				return b.nextAiringEpisode.timeUntilAiring - a.nextAiringEpisode.timeUntilAiring;
+			});
+		}
+
+		else if(this.state.order === 'ascending') {
+			anime.sort(function(a, b){
+				return a.nextAiringEpisode.timeUntilAiring - b.nextAiringEpisode.timeUntilAiring;
+			});
+		}
+
+		return anime;
+	}
+
+	popularity(anime) {
+		if(this.state.order === 'descending') {
+			anime.sort(function(a, b){
+				return b.popularity - a.popularity;
+			});
+		}
+
+		else if(this.state.order === 'ascending') {
+			anime.sort(function(a, b){
+				return a.popularity - b.popularity;
+			});
+		}
+
+		return anime;
+	}
+
+	score(anime) {
+		if(this.state.order === 'descending') {
+			anime.sort(function(a, b){
+				return b.averageScore - a.averageScore;
+			});
+		}
+
+		else if(this.state.order === 'ascending') {
+			anime.sort(function(a, b){
+				return a.averageScore - b.averageScore;
+			});
+		}
+		return anime;
+	}
+
+	alphabetize(anime) {
+		function compareDescending(a,b) {
+		  if (a.title.userPreferred < b.title.userPreferred){
+		    return -1;
+		  }
+		  if (a.title.userPreferred > b.title.userPreferred){
+		    return 1;
+		  }
+		  return 0;
+		}
+
+		function compareAscending(a,b) {
+		  if (a.title.userPreferred > b.title.userPreferred){
+		    return -1;
+		  }
+		  if (a.title.userPreferred < b.title.userPreferred){
+		    return 1;
+		  }
+		  return 0;
+		}
+
+		if(this.state.order === 'descending') {
+			anime.sort(compareDescending);
+		} 
+
+		else if(this.state.order === 'ascending') {
+			anime.sort(compareAscending);
+		}
+
 		return anime;
 	}
 
@@ -118,7 +232,7 @@ class AnimeChartPanel extends Component {
 						<p>Popularity: </p>
 					</div>
 					<div>
-						&nbsp;#{popularity}
+						&nbsp;{popularity}
 					</div>
 				</div>
 			</div>
@@ -369,8 +483,8 @@ class AnimeChartPanel extends Component {
           <MenuItem value="alphabetically" primaryText="Alphabetically" />
           <MenuItem value="score" primaryText="Score" />
           <MenuItem value="popularity" primaryText="Popularity" />
-          <MenuItem value="next episode" primaryText="Next episode" />
-          <MenuItem value="episode length" primaryText="Episode length" />
+          <MenuItem value="next episode" primaryText="Time until next episode" />
+          <MenuItem value="series length" primaryText="Series length" />
         </DropDownMenu>
       </div>
 		);
