@@ -1,9 +1,11 @@
 
 # React Front End for https://github.com/kudou-reira/xdcc2
 
-still very rough, working on using atarashii api for currently airing series. also, trying to connect to irc via node.
+still very rough, working on using anilist graphql api for currently airing series.
 
-file transfer support built in, but only saves in root of directory (MyApp) so far. use at your own risk. illegal file sharing is not condoned.
+file transfer support through node-irc built in, but only saves in root of directory (MyApp) so far. use at your own risk. illegal file sharing is not condoned.
+
+demo picture here https://imgur.com/Y574aan
 
 created with electron, download prototype here and start MyApp https://drive.google.com/file/d/1yH9pqTvdayDpZqgsettXGRG6sLpwIAjY/view?usp=sharing
 
