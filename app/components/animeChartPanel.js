@@ -21,9 +21,11 @@ class AnimeChartPanel extends Component {
 			sort: 'alphabetically',
 			type: 'tv',
 			order: 'ascending',
-			season: 'fall'
+			season: 'fall',
+			startDate: this.findCurrentDate("string")
 		}
 
+		this.handleStartDateChange = this.handleStartDateChange.bind(this);
 		this.handleSeasonChange = this.handleSeasonChange.bind(this);
 		this.handleOrderChange = this.handleOrderChange.bind(this);
 		this.handleSortChange = this.handleSortChange.bind(this);
@@ -66,7 +68,7 @@ class AnimeChartPanel extends Component {
 						key={anime.id}
 					>
 						<div>
-							{this.renderAiring(anime.nextAiringEpisode.timeUntilAiring, anime.status)}
+							{this.renderAiring(anime.nextAiringEpisode.timeUntilAiring, anime.status, anime.nextAiringEpisode.episode)}
 						</div>
 						<hr />
 						<div id="wide">
@@ -189,12 +191,12 @@ class AnimeChartPanel extends Component {
 		}
 	}
 
-	renderAiring(time, status) {
+	renderAiring(time, status, nextEpisode) {
 		if (status === "RELEASING" && time !== 0) {
 			return(
 				<div id="wrapper2" className="bottomMargin">
 					<div id="wide" className="center">
-						<p>Next episode airs in:</p>
+						<p>Episode {nextEpisode} airs in:</p>
 					</div>
 					<div id="narrow">
 						<div className="center">
@@ -223,12 +225,82 @@ class AnimeChartPanel extends Component {
 		}
 	}
 
+	findCurrentDate(formatType) {
+		var newYear;
+		var nowYear = moment().year();
+		var nowMonth = moment().month();
+
+		console.log("this is now month", nowMonth);
+		
+		if (formatType === "string") {
+			newYear = nowYear + "%";
+		}
+	
+		else if (formatType === "int") {
+			newYear = nowYear;
+		}
+		return newYear;
+	}
+
+	handleStartDateChange(event, index, value){
+		this.setState({
+			startDate: value
+		}, () => {
+			console.log("this is startDate", this.state.startDate);
+			this.props.fetchAnime(this.state.season.toUpperCase(), this.state.startDate);
+		});
+	} 
+
+	renderStartDate() {
+		return(
+			<div>
+        <DropDownMenu
+          value={this.state.startDate}
+          onChange={this.handleStartDateChange}
+          name="order"
+          style={styles.customWidth}
+          autoWidth={false}
+        >
+        	{this.generateStartDates()}
+        </DropDownMenu>
+      </div>
+		);
+	}
+
+	generateStartDates() {
+		var nowMonth = moment().month();
+		var currentDateToUse = this.findCurrentDate("int");
+		if(nowMonth === 11) {
+			currentDateToUse += 1;
+		}
+
+		var tempStartDates = [];
+		console.log("this is generateStartDates");
+		for(var i = currentDateToUse; i > 1923; i--) {
+			tempStartDates.push(i); 
+		}
+
+		console.log("this is tempStartDates", tempStartDates);
+
+		tempStartDates = tempStartDates.map((year) => {
+			return(
+				<MenuItem value={this.formatYear(year)} primaryText={year} />
+			);
+		})
+
+  	return tempStartDates;
+	}
+
+	formatYear(year) {
+		return year + "%";
+	}
+
 	handleSeasonChange(event, index, value){
 		this.setState({
 			season: value
 		}, () => {
 			console.log("this is season", this.state.season);
-			this.props.fetchAnime(this.state.season.toUpperCase(), "2017%");
+			this.props.fetchAnime(this.state.season.toUpperCase(), this.state.startDate);
 		});
 	} 
 
@@ -330,7 +402,9 @@ class AnimeChartPanel extends Component {
 
 	formatStatus(status) {
 		var tempStatus = status.toLowerCase();
-		return tempStatus.charAt(0).toUpperCase() + tempStatus.slice(1);
+		tempStatus = tempStatus.charAt(0).toUpperCase() + tempStatus.slice(1);
+		tempStatus = tempStatus.replace(/_/g, ' ');;
+		return tempStatus;
 	}
 
 	formatDescription(description) {
@@ -405,10 +479,11 @@ class AnimeChartPanel extends Component {
 						? <div className="center">Loading...</div>
 						: <div>
 								<div className="groupDrop">
-									<div>
+									<div id="dropdown1">
 										{this.renderSeason()}
+										{this.renderStartDate()}
 									</div>
-									<div id="dropdown">
+									<div id="dropdown2">
 										{this.renderFormatSelect()}
 										{this.renderSort()}
 										{this.renderOrder()}
