@@ -1,6 +1,7 @@
 import { ipcRenderer }  from 'electron';
 import { 
   FETCH_ANIME,
+  FETCH_CONTINUING_ANIME,
   FETCH_SUGGESTIONS, 
   UPDATE_TEMP_QUEUE, 
   DELETE_TEMP_QUEUE, 
@@ -44,6 +45,16 @@ export const fetchAnime = (season, year) => dispatch => {
   ipcRenderer.once('fetch:animeDone', (event, anime) => {
     dispatch({
       type: FETCH_ANIME,
+      payload: anime
+    });
+  });
+};
+
+export const fetchContinuingAnime = (season, year) => dispatch => {
+  ipcRenderer.send('fetch:continuingAnime', season, year);
+  ipcRenderer.once('fetch:continuingAnimeDone', (event, anime) => {
+    dispatch({
+      type: FETCH_CONTINUING_ANIME,
       payload: anime
     });
   });

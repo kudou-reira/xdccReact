@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import * as actions from '../actions';
 import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
+import RaisedButton from 'material-ui/RaisedButton';
 
 var moment = require("moment");
 var momentDurationFormatSetup = require("moment-duration-format");
@@ -18,11 +19,14 @@ class AnimeChartPanel extends Component {
 		super();
 		this.state = {
 			series: true,
-			sort: 'alphabetically',
+			sort: 'next episode',
 			type: 'tv',
-			order: 'descending',
-			season: 'fall',
-			startDate: this.findCurrentDate("string")
+			order: 'ascending',
+			season: this.findCurrentSeason(),
+			continuingSeason: this.findContinuingSeason(),
+			startDate: this.findCurrentDate("string"),
+			continuingDate: this.findContinuingDate(),
+			current: true
 		}
 
 		this.handleStartDateChange = this.handleStartDateChange.bind(this);
@@ -33,11 +37,26 @@ class AnimeChartPanel extends Component {
 	}
 
 	componentDidMount() {
-		this.props.fetchAnime(this.state.season.toUpperCase(), "2017%");
+		console.log("this is continuingSeason", this.state.continuingSeason);
+		console.log("this is continuingDate", this.state.continuingDate);
+		console.log("this is startDate", this.state.startDate);
+		this.props.fetchAnime(this.state.season.toUpperCase(), this.state.startDate);
+		this.props.fetchContinuingAnime(this.state.continuingSeason.toUpperCase(), this.state.continuingDate);
 	}
 
-	renderAnimeOrOtherChart() {
-		var anime = this.props.animeList.anime.media;
+	renderAnimeOrOtherChart(typeOfFetch) {
+		if(typeOfFetch === "new") {
+			var anime = this.props.animeList.anime.media;
+		}
+
+		else if(typeOfFetch === "continuing") {
+			// do double fetches in component did mount;
+			var anime = this.props.animeList.continuingAnime.media;
+			anime = anime.filter((anime) => {
+				return anime.nextAiringEpisode.timeUntilAiring !== 0;
+			});
+		}
+
 		console.log("inside anilist is not null");
 		console.log("this is sort", this.state.sort);
 		switch(this.state.sort) {
@@ -160,11 +179,11 @@ class AnimeChartPanel extends Component {
 		  return 0;
 		}
 
-		if(this.state.order === 'descending') {
+		if(this.state.order === 'ascending') {
 			anime.sort(compareDescending);
 		} 
 
-		else if(this.state.order === 'ascending') {
+		else if(this.state.order === 'descending') {
 			anime.sort(compareAscending);
 		}
 
@@ -306,7 +325,7 @@ class AnimeChartPanel extends Component {
 	}
 
 	renderAiring(time, status, nextEpisode) {
-		if (status === "RELEASING" && time !== 0) {
+		if (time !== 0) {
 			return(
 				<div id="wrapper2" className="bottomMargin">
 					<div id="wide" className="center">
@@ -336,6 +355,68 @@ class AnimeChartPanel extends Component {
 					</div>
 				</div>
 			);
+		}
+	}
+
+	findContinuingDate() {
+		var currentSeason = this.findCurrentSeason();
+		var currentDate = this.findCurrentDate("int");
+		var continuingDate;
+
+		if(currentSeason === 'winter') {
+			continuingDate = (this.findCurrentDate("int") - 1) + "%";
+		}
+
+		else {
+			continuingDate = this.findCurrentDate("string");
+		}
+
+		return continuingDate;
+
+	}
+
+	findContinuingSeason() {
+		var currentSeason = this.findCurrentSeason();
+		var currentDate = this.findCurrentDate("int");
+		var continuingSeason;
+
+		if(currentSeason === 'winter') {
+			continuingSeason = 'fall';
+		}
+
+		else if(currentSeason === 'fall') {
+			continuingSeason = 'spring';
+		}
+
+		else if(currentSeason === 'summer') {
+			continuingSeason = 'spring';
+		}
+
+		else if(currentSeason === 'spring') {
+			continuingSeason = 'winter';
+		}
+
+		return continuingSeason;
+	}
+
+	findCurrentSeason() {
+		var nowMonth = moment().month();
+		console.log("this is now month", nowMonth);
+
+		if (0 <= nowMonth <= 2) {
+			return 'winter';
+		}
+
+		else if(3 <= nowMonth <= 5) {
+			return 'spring';
+		}
+
+		else if(6 <= nowMonth <= 8) {
+			return 'summer';
+		}
+
+		else if(9 <= nowMonth <= 11) {
+			return 'fall';
 		}
 	}
 
@@ -414,6 +495,10 @@ class AnimeChartPanel extends Component {
 			season: value
 		}, () => {
 			console.log("this is season", this.state.season);
+			// var continuing = this.props.animelist.anime.media.map((anime) => {
+			// 	return anime.endDate.year === null;
+			// });
+			// console.log("this is continuing", continuing);
 			this.props.fetchAnime(this.state.season.toUpperCase(), this.state.startDate);
 		});
 	} 
@@ -603,9 +688,35 @@ class AnimeChartPanel extends Component {
 										{this.renderOrder()}
 									</div>
 								</div>
-								<div className="cards">
-									{this.renderAnimeOrOtherChart()}
-								</div>
+									{
+										(this.state.current)
+											? <div>
+												  <div id="dropdown2">
+												  	  <RaisedButton 
+											            label="See Continuing Series" 
+											            style={{marginTop: 5.5, marginRight: 5}}
+											            onClick={() => this.setState({ current: false })} 
+											          />
+												  </div>
+												  <div className="cards">
+													{this.renderAnimeOrOtherChart("new")}
+												  </div>
+											  </div>
+											: <div>
+												  <div id="dropdown2">
+													  <RaisedButton 
+											            label="See New Series" 
+											            style={{marginTop: 5.5, marginRight: 5}}
+											            onClick={() => this.setState({ current: true })} 
+											          />
+												  </div>
+												  <div className="cards">
+													{this.renderAnimeOrOtherChart("continuing")}
+												  </div>
+											  </div>
+									}
+									
+								
 							</div>
 				}
 

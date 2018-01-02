@@ -5,6 +5,7 @@ import {app, crashReporter, BrowserWindow, Menu, ipcMain, shell } from 'electron
 
 const { requireTaskPool } = require('electron-remote');
 const fetchAnime = requireTaskPool(require.resolve('./childProcesses/fetchAnime'));
+const fetchContinuingAnime = requireTaskPool(require.resolve('./childProcesses/fetchContinuingAnime'));
 const fetchSuggestions = requireTaskPool(require.resolve('./childProcesses/fetchSuggestions'));
 const sendQueue = requireTaskPool(require.resolve('./childProcesses/sendQueue'));
 const startDownloads = requireTaskPool(require.resolve('./childProcesses/startDownloads'));
@@ -308,6 +309,22 @@ ipcMain.on('fetch:anime', (e, season, year) => {
   });
 });
 
+ipcMain.on('fetch:continuingAnime', (e, season, year) => {
+  console.log("this is fetchContinuingAnime", season, year);
+  var xdccAnilist;
+  if(isDevelopment) {
+    xdccAnilist = "http://localhost:8080/xdccAnilist";
+  }
+
+  else {
+    xdccAnilist = "https://immense-beyond-13018.herokuapp.com/xdccAnilist"
+  }
+
+  fetchContinuingAnime(season, year, xdccAnilist).then((result) => {
+    mainWindow.webContents.send('fetch:continuingAnimeDone', result);
+  });
+});
+
 
 ipcMain.on('fetch:suggestions', (e, suggestion) => {
   console.log('start fetchSuggestions');
@@ -383,15 +400,29 @@ ipcMain.on('start:downloads', (e, queue) => {
 
     var allParallel = [];
 
-    for(var k = 0; k < allTasks.length; k++) {
-      var singleParallel = async.parallel(allTasks[k], function(err, results) {
-        console.log("this is the tasks parallel");
-        console.log("these are the results in tasks parallel", results);
-      });
-      allParallel.push(singleParallel);
-    }
 
-    console.log("this is all parallel", allParallel);
+
+    // why doesn't this work...
+    // for(var k = 0; k < allTasks.length; k++) {
+    //   var singleParallel = async.parallel(allTasks[k], function(err, results) {
+    //     console.log("this is the tasks parallel");
+    //     console.log("these are the results in tasks parallel", results);
+    //   });
+    //   allParallel.push(singleParallel);
+    // }
+
+    var test1 = allTasks[0];
+    console.log("this is alltasks[0]", test1);
+
+    // unused
+    async.parallel(test1, function(err, results) {
+      console.log("this is the tasks parallel");
+      console.log("these are the results in tasks parallel", results);
+    });
+
+
+
+    // console.log("this is all parallel", allParallel);
 
     // async.series(allParallel, function(err, results) {
     //   console.log("this is the async series");
@@ -399,14 +430,14 @@ ipcMain.on('start:downloads', (e, queue) => {
     // });
 
 
-    async.eachSeries(allParallel, function (eachParallel, done) {
-        setTimeout(function () {
-           eachParallel;
-           done();
-        }, 300000);
-    }, function (err) {
+    // async.eachSeries(allParallel, function (eachParallel, done) {
+    //     setTimeout(function () {
+    //        eachParallel;
+    //        done();
+    //     }, 300000);
+    // }, function (err) {
       
-    });
+    // });
 
 
 
@@ -489,13 +520,13 @@ function startXDCC(singleBot, callback) {
   var path;
 
   if(isDevelopment) {
-    path = 'H:\anime';
+    path = 'F:\anime';
   }
 
   else {
     // path = process.cwd();
     // path = require('path').basename(__dirname);
-    path = 'H:\anime';
+    path = 'F:\anime';
   }
 
   // path = __dirname;
