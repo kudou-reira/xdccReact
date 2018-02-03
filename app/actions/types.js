@@ -10,3 +10,5 @@ export const REMOVE_DOWNLOAD = "remove_download";
 export const CLEAR_DOWNLOAD = "clear_download";
 export const START_DOWNLOAD = "start_download";
 export const DOWNLOADING_ITEMS = "downloading_items";
+export const OPEN_SHELL = "open_shell";
+export const DEFAULT_SHELL = "default_shell";

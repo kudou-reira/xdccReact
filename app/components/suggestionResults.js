@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import _ from 'lodash';
 import * as actions from '../actions';
 import Loader from 'halogen/ScaleLoader';
+import ShellExplorer from './shellExplorer';
 
 
 class SuggestionResults extends Component {
@@ -276,7 +277,7 @@ class SuggestionResults extends Component {
 				<div className="center">
 					{this.renderValid()}
           <br />
-					"this is the suggestion results window"
+          <ShellExplorer />
 				</div>
         {this.renderListSuggestion()}
 			</div>

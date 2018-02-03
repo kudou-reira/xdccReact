@@ -4,13 +4,14 @@ import * as actions from '../actions';
 import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton';
+import CurrentSearch from './currentSearch';
 
 var moment = require("moment");
 var momentDurationFormatSetup = require("moment-duration-format");
 
 const styles = {
   customWidth: {
-    width: 182
+    width: 200
   }
 };
 
@@ -41,6 +42,8 @@ class AnimeChartPanel extends Component {
 		console.log("this is continuingDate", this.state.continuingDate);
 		console.log("this is startDate", this.state.startDate);
 		this.props.fetchAnime(this.state.season.toUpperCase(), this.state.startDate);
+		console.log("this is the continuing season", this.state.continuingSeason);
+		console.log("this is the continuing date", this.state.continuingDate);
 		this.props.fetchContinuingAnime(this.state.continuingSeason.toUpperCase(), this.state.continuingDate);
 	}
 
@@ -568,7 +571,7 @@ class AnimeChartPanel extends Component {
           <MenuItem value="alphabetically" primaryText="Alphabetically" />
           <MenuItem value="score" primaryText="Score" />
           <MenuItem value="popularity" primaryText="Popularity" />
-          <MenuItem value="next episode" primaryText="Time until next episode" />
+          <MenuItem value="next episode" primaryText="Next episode" />
           <MenuItem value="series length" primaryText="Series length" />
         </DropDownMenu>
       </div>
@@ -671,7 +674,7 @@ class AnimeChartPanel extends Component {
 		return(
 			<div>
 				<div className="center">
-					this is the anime chart
+					Currently Airing Anime
 				</div>
 				{
 					(this.props.animeList.anime === null)
@@ -691,16 +694,25 @@ class AnimeChartPanel extends Component {
 									{
 										(this.state.current)
 											? <div>
-												  <div id="dropdown2">
-												  	  <RaisedButton 
-											            label="See Continuing Series" 
-											            style={{marginTop: 5.5, marginRight: 5}}
-											            onClick={() => this.setState({ current: false })} 
-											          />
-												  </div>
-												  <div className="cards">
-													{this.renderAnimeOrOtherChart("new")}
-												  </div>
+													<div className="center2">
+														<div className="groupDrop">
+																<div id="dropdown1">
+																	<CurrentSearch />
+																</div>
+															  <div id="dropdown2">
+															  	  <RaisedButton 
+														            label="See Continuing Series" 
+														            style={{marginTop: 5.5, marginRight: 5}}
+														            onClick={() => this.setState({ current: false })} 
+														          />
+															  </div>
+														</div>
+													</div>
+													<div>
+													  <div className="cards">
+														{this.renderAnimeOrOtherChart("new")}
+													  </div>
+													</div>
 											  </div>
 											: <div>
 												  <div id="dropdown2">

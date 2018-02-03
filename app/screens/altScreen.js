@@ -37,7 +37,7 @@ class AltScreen extends Component {
 		return(
 			<div>
 				<Link to="/">
-					go to homescreen
+					go to anime list
 				</Link>
 				<h1>
 					this is the alternate screen

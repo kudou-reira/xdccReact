@@ -11,7 +11,9 @@ import {
   REMOVE_DOWNLOAD, 
   CLEAR_DOWNLOAD,
   START_DOWNLOAD,
-  DOWNLOADING_ITEMS
+  DOWNLOADING_ITEMS,
+  OPEN_SHELL,
+  DEFAULT_SHELL
 } from "./types";
 // const {BrowserWindow} = require('electron').remote;
 // let downloadWindow = new BrowserWindow({ 
@@ -39,6 +41,26 @@ export const addVideos = videos => dispatch => {
     });
   });
 };
+
+export const openShell = () => dispatch => {
+  ipcRenderer.send('shell:open', 'open');
+  ipcRenderer.once('shell:openDone', (event, path) => {
+    dispatch({
+      type: OPEN_SHELL,
+      payload: path
+    })
+  });
+}
+
+export const defaultShell = () => dispatch => {
+  ipcRenderer.send('shell:default', 'default');
+  ipcRenderer.once('shell:defaultDone', (event, path) => {
+    dispatch({
+      type: DEFAULT_SHELL,
+      payload: path
+    })
+  });
+}
 
 export const fetchAnime = (season, year) => dispatch => {
   ipcRenderer.send('fetch:anime', season, year);

@@ -107,7 +107,7 @@ class HomeScreen extends Component {
     return (
       <div>
         <h1 className="center">
-        	This is the homescreen
+        	
         </h1>
         <div id="alignRight">
 	      	<RaisedButton 

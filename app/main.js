@@ -1,7 +1,15 @@
 import path from 'path';
 import url from 'url';
-import {app, crashReporter, BrowserWindow, Menu, ipcMain, shell } from 'electron';
+import {app, crashReporter, BrowserWindow, Menu, ipcMain, shell, dialog } from 'electron';
 
+// var app = require('electron').remote; 
+// var dialog = app.dialog;
+
+// // Or with ECMAScript 6
+// const { dialog } = require('electron').remote;
+
+const Store = require('electron-store');
+const store = new Store();
 
 const { requireTaskPool } = require('electron-remote');
 const fetchAnime = requireTaskPool(require.resolve('./childProcesses/fetchAnime'));
@@ -14,6 +22,10 @@ const async = require('async');
 const axios = require('axios');
 const _ = require('lodash');
 var os = require('os');
+
+// set a global path variable
+var folderPath = store.get('storedPath') === null ? process.cwd() : store.get('storedPath');
+console.log("this is the stored folder path", folderPath);
 
 const isDevelopment = (process.env.NODE_ENV === 'development');
 process.env.GOOGLE_API_KEY = "AIzaSyCpdUeRmQD8ICPR6IWT-tUGQUBTxdGY404";
@@ -321,10 +333,10 @@ ipcMain.on('fetch:continuingAnime', (e, season, year) => {
   }
 
   fetchContinuingAnime(season, year, xdccAnilist).then((result) => {
+    console.log("this is the result from fetchContinuingAnime", result);
     mainWindow.webContents.send('fetch:continuingAnimeDone', result);
   });
 });
-
 
 ipcMain.on('fetch:suggestions', (e, suggestion) => {
   console.log('start fetchSuggestions');
@@ -504,6 +516,9 @@ console.log(addresses);
 var fullPath = __dirname;
 console.log("this is path", fullPath);
 
+console.log("this is processsssssssssssssssssssss", process.cwd());
+
+
 function startXDCC(singleBot, callback) {
 
   // console.log("this is singleBot in connect xdcc", singleBot);
@@ -517,16 +532,16 @@ function startXDCC(singleBot, callback) {
   var ProgressBar = require('progress');
 
   var irc = require('xdcc').irc;
-  var path;
+
 
   if(isDevelopment) {
-    path = 'F:\anime';
+    folderPath = 'F:\anime';
   }
 
   else {
     // path = process.cwd();
     // path = require('path').basename(__dirname);
-    path = 'F:\anime';
+    folderPath = 'F:\anime';
   }
 
   // path = __dirname;
@@ -625,7 +640,46 @@ function startXDCC(singleBot, callback) {
   });
 }
 
+// need a reducer to send out on component did mount to get the current file location
+// that will be another ipcMain.on
+// update the path here too
 
-ipcMain.on('folder:open', (event, outputPath) => {
-  shell.showItemInFolder(outputPath);
+ipcMain.on('shell:default', (event, empty) => {
+  console.log("this is shell default");
+  console.log("this should be default test", empty);
+  mainWindow.webContents.send('shell:defaultDone', folderPath);
 });
+
+
+
+ipcMain.on('shell:open', (event, empty) => {
+  console.log("this is shell open");
+  console.log("this should be test", empty);
+
+  dialog.showOpenDialog({
+      title:"Select a folder",
+      defaultPath: folderPath,
+      properties: ["openDirectory"]
+  }, (folderPaths) => {
+      // folderPaths is an array that contains all the selected paths
+      if(folderPaths === undefined){
+          console.log("No destination folder selected");
+          console.log("this is folderpaths", folderPaths);
+          store.set('storedPath', folderPath);
+          mainWindow.webContents.send('shell:openDone', folderPath);
+      }
+
+      else {
+          console.log(folderPaths);
+          folderPath = folderPaths[0];
+          store.set('storedPath', folderPath);
+          mainWindow.webContents.send('shell:openDone', folderPath);
+      }
+
+      // send back webcontents
+      // downloadWindow.webContents.send('send:queueDone', result);
+  });
+
+  // shell.showItemInFolder(process.cwd());
+});
+

@@ -13,7 +13,7 @@ export default (state = INITIAL_STATE, action) => {
   	case FETCH_ANIME:
   		return {...state, anime: action.payload}
   	case FETCH_CONTINUING_ANIME:
-  		return {...state, continuingAnime: action.payload}
+		return {...state, continuingAnime: action.payload}
     default:
       return state;
   }
