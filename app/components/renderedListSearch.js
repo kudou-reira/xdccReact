@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import TextField from 'material-ui/TextField';
+import { connect } from 'react-redux';
+import * as actions from '../actions';
 
-class CurrentSearch extends Component {
+class RenderedListSearch extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -14,6 +16,7 @@ class CurrentSearch extends Component {
   onTextChange(event) {
 		this.setState({ searchTitle: event.target.value }, () => {
 			console.log("this is the searchTitle state", this.state.searchTitle);
+			this.props.renderedSearch(this.state.searchTitle);
 		});
 	}
 
@@ -21,15 +24,14 @@ class CurrentSearch extends Component {
   	return(
   		<div>
   			<TextField
-         	hintText="Enter title here"
-	        floatingLabelText="Searching anime..."
+         	hintText="Enter query (title, studio, genre)"
+	        floatingLabelText="Searching for anime"
 	        onChange={this.onTextChange}
 	      />
   		</div>
   	);
   }
-
 }
 
-export default CurrentSearch;
+export default connect(null, actions)(RenderedListSearch);
 

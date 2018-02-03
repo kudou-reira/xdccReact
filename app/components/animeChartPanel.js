@@ -4,7 +4,7 @@ import * as actions from '../actions';
 import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton';
-import CurrentSearch from './currentSearch';
+import RenderedListSearch from './renderedListSearch';
 
 var moment = require("moment");
 var momentDurationFormatSetup = require("moment-duration-format");
@@ -16,8 +16,8 @@ const styles = {
 };
 
 class AnimeChartPanel extends Component {
-	constructor() {
-		super();
+	constructor(props) {
+		super(props);
 		this.state = {
 			series: true,
 			sort: 'next episode',
@@ -27,7 +27,9 @@ class AnimeChartPanel extends Component {
 			continuingSeason: this.findContinuingSeason(),
 			startDate: this.findCurrentDate("string"),
 			continuingDate: this.findContinuingDate(),
-			current: true
+			current: true,
+			showRecent: false,
+			searchTitle: ''
 		}
 
 		this.handleStartDateChange = this.handleStartDateChange.bind(this);
@@ -47,6 +49,27 @@ class AnimeChartPanel extends Component {
 		this.props.fetchContinuingAnime(this.state.continuingSeason.toUpperCase(), this.state.continuingDate);
 	}
 
+	cleanString(str) {
+		if(str.length > 0) {
+			return str.replace(/[^\w]/g, "").toLowerCase();
+		}
+	}
+
+	containsGenre(genres, search) {
+		var cleanedGenres = [];
+		for(let genre of genres) {
+			cleanedGenres.push(this.cleanString(genre));
+		}
+
+		for(let genre of cleanedGenres) {
+			if(genre.indexOf(search) !== -1) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	renderAnimeOrOtherChart(typeOfFetch) {
 		if(typeOfFetch === "new") {
 			var anime = this.props.animeList.anime.media;
@@ -57,6 +80,22 @@ class AnimeChartPanel extends Component {
 			var anime = this.props.animeList.continuingAnime.media;
 			anime = anime.filter((anime) => {
 				return anime.nextAiringEpisode.timeUntilAiring !== 0;
+			});
+		}
+
+		console.log("this is anime in fetch", anime);
+		if(this.props.animeList.search.length > 0) {
+			anime = anime.filter((media) => {
+				var studio = media.studios.nodes.length > 0 ? media.studios.nodes[0].name : '';
+				var genres = media.genres.length > 0 ? media.genres : [];
+
+				if(studio.length > 0 && genres.length > 0) {
+					return this.cleanString(media.title.userPreferred).indexOf(this.cleanString(this.props.animeList.search)) !== -1 || 
+								this.cleanString(studio).indexOf(this.cleanString(this.props.animeList.search)) !== -1 || this.containsGenre(genres, this.cleanString(this.props.animeList.search));
+				} else {
+					return this.cleanString(media.title.userPreferred).indexOf(this.cleanString(this.props.animeList.search)) !== -1
+				}
+
 			});
 		}
 
@@ -195,8 +234,6 @@ class AnimeChartPanel extends Component {
 
 	renderAnimeSeries(anime) {
 		if(this.props.animeList.anime !== null) {
-			console.log("this is filtered anime", anime);
-
 			anime = anime.map((anime) => {
 				return(
 					<div 
@@ -206,7 +243,13 @@ class AnimeChartPanel extends Component {
 						<div>
 							{this.renderAiring(anime.nextAiringEpisode.timeUntilAiring, anime.status, anime.nextAiringEpisode.episode)}
 						</div>
-						<hr />
+						<div className="fade">
+							<hr />
+							<div>
+								{this.renderSources()}
+							</div>
+							<hr />
+						</div>
 						<div id="wide">
 							<div className="center topMargin3">
 								<img className="imgRound" src={anime.coverImage.large} />
@@ -292,7 +335,6 @@ class AnimeChartPanel extends Component {
 	}
 
 	renderGenre(genres) {
-		console.log("these are the genres", genres);
 		genres = genres.join(', ');
 
 		return(
@@ -311,7 +353,6 @@ class AnimeChartPanel extends Component {
 
 	renderStudio(nodes) {
 		if(nodes !== undefined) {
-			console.log("this is nodes", nodes);
 			return(
 				<div className="topMargin2">
 					<div id="text">
@@ -325,6 +366,21 @@ class AnimeChartPanel extends Component {
 				</div>
 			);
 		}
+	}
+
+	renderSources() {
+		return(
+			<div id="wrapper2" className="bottomMargin">
+				<div id="wide" className="center">
+					<p>Available Sources</p>
+				</div>
+				<div id="narrow">
+					<div className="center">
+						Up to episode
+					</div>
+				</div>
+			</div>
+		);
 	}
 
 	renderAiring(time, status, nextEpisode) {
@@ -610,16 +666,12 @@ class AnimeChartPanel extends Component {
 	}
 
 	formatDescription(description) {
-		console.log("this is description", description);
 		description = description.replace(/<br\s*[\/]?>/gi, "")
 		description = description.replace(/<i>/gi, "")
 		description = description.replace(/<\/i>/gi, "")
 
 		var parens = this.formatSource(description);
 		// var i = this.formatI(description);
-
-
-		console.log("this is parens", parens);
 
 		description = description.replace(parens, "")
 		// description = description.replace(i, "")
@@ -644,9 +696,7 @@ class AnimeChartPanel extends Component {
 	formatSource(description) {
 		var parens;
 		parens = description.match(/\(([^()]+)\)/g);
-		console.log("this is parens", parens);
 		if (parens !== null) {
-			console.log("this is parens length", parens.length);
 			return parens[parens.length-1]
 		}
 	}
@@ -691,44 +741,53 @@ class AnimeChartPanel extends Component {
 										{this.renderOrder()}
 									</div>
 								</div>
-									{
-										(this.state.current)
-											? <div>
-													<div className="center2">
-														<div className="groupDrop">
-																<div id="dropdown1">
-																	<CurrentSearch />
-																</div>
-															  <div id="dropdown2">
-															  	  <RaisedButton 
-														            label="See Continuing Series" 
-														            style={{marginTop: 5.5, marginRight: 5}}
-														            onClick={() => this.setState({ current: false })} 
-														          />
-															  </div>
-														</div>
-													</div>
-													<div>
-													  <div className="cards">
-														{this.renderAnimeOrOtherChart("new")}
-													  </div>
-													</div>
-											  </div>
-											: <div>
-												  <div id="dropdown2">
-													  <RaisedButton 
+								<div>
+									<div className="center2">
+										<div className="groupDrop">
+												<div id="dropdown1">
+													<RenderedListSearch />
+												</div>
+											  <div id="dropdown2">
+											  		{
+											  			(this.state.current)
+											  			? <RaisedButton 
+											            label="See Continuing Series" 
+											            style={{marginTop: 5.5, marginRight: 5}}
+											            onClick={() => this.setState({ current: false })} 
+											          />
+											        : <RaisedButton 
 											            label="See New Series" 
 											            style={{marginTop: 5.5, marginRight: 5}}
 											            onClick={() => this.setState({ current: true })} 
 											          />
-												  </div>
-												  <div className="cards">
-													{this.renderAnimeOrOtherChart("continuing")}
-												  </div>
+											  		}
+
+											  		{
+											  			(this.state.showRecent)
+											  			? <RaisedButton 
+											            label="Hide Recently Aired" 
+											            style={{marginTop: 5.5, marginRight: 5}}
+											            onClick={() => this.setState({ showRecent: false })} 
+											          />
+											        : <RaisedButton 
+											            label="Show Recently Aired" 
+											            style={{marginTop: 5.5, marginRight: 5}}
+											            onClick={() => this.setState({ showRecent: true })} 
+											          />
+											  		}
 											  </div>
-									}
-									
-								
+										</div>
+									</div>
+									<div>
+									  <div className="cards">
+											{
+												(this.state.current)
+												? this.renderAnimeOrOtherChart("new")
+												: this.renderAnimeOrOtherChart("continuing")
+											}
+									  </div>
+									</div>
+							  </div>
 							</div>
 				}
 

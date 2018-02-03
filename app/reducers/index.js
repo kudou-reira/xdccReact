@@ -8,6 +8,7 @@ import downloadListReducer from './downloadListReducer';
 import startDownloadReducer from './startDownloadReducer';
 import animeListReducer from './animeListReducer';
 import shellPathReducer from './shellPathReducer';
+import renderedSearchReducer from './renderedSearchReducer';
 
 const rootReducer = combineReducers({
   search: searchReducer,

@@ -1,5 +1,6 @@
 import { ipcRenderer }  from 'electron';
 import { 
+  RENDERED_SEARCH,
   FETCH_ANIME,
   FETCH_CONTINUING_ANIME,
   FETCH_SUGGESTIONS, 
@@ -41,6 +42,13 @@ export const addVideos = videos => dispatch => {
     });
   });
 };
+
+export const renderedSearch = (searchTitle) => {
+  return({
+    type: RENDERED_SEARCH,
+    payload: searchTitle
+  })
+}
 
 export const openShell = () => dispatch => {
   ipcRenderer.send('shell:open', 'open');

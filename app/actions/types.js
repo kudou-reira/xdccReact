@@ -1,3 +1,4 @@
+export const RENDERED_SEARCH = "rendered_search";
 export const FETCH_ANIME = "fetch_anime";
 export const FETCH_CONTINUING_ANIME = "fetch_continuing_anime";
 export const FETCH_SUGGESTIONS = "fetch_suggestions";
