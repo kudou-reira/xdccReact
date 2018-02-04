@@ -29,7 +29,8 @@ class AnimeChartPanel extends Component {
 			continuingDate: this.findContinuingDate(),
 			current: true,
 			showRecent: false,
-			searchTitle: ''
+			searchTitle: '',
+			recentParam: 24
 		}
 
 		this.handleStartDateChange = this.handleStartDateChange.bind(this);
@@ -37,6 +38,7 @@ class AnimeChartPanel extends Component {
 		this.handleOrderChange = this.handleOrderChange.bind(this);
 		this.handleSortChange = this.handleSortChange.bind(this);
 		this.handleTypeChange = this.handleTypeChange.bind(this);
+		this.handleRecentSortChange = this.handleRecentSortChange.bind(this);
 	}
 
 	componentDidMount() {
@@ -70,6 +72,18 @@ class AnimeChartPanel extends Component {
 		return false;
 	}
 
+	renderRecentList() {
+		var anime = this.props.animeList.anime.media;
+		console.log("this is renderRecentList", anime);
+		anime = anime.filter((media) => {
+			return media.format === "TV";
+		});
+		anime = this.filterByRecentParams(anime);
+		anime = this.nextEpisodeRecent(anime);
+		anime = this.renderAnimeSeries(anime);
+		return anime;
+	}
+
 	renderAnimeOrOtherChart(typeOfFetch) {
 		if(typeOfFetch === "new") {
 			var anime = this.props.animeList.anime.media;
@@ -83,7 +97,6 @@ class AnimeChartPanel extends Component {
 			});
 		}
 
-		console.log("this is anime in fetch", anime);
 		if(this.props.animeList.search.length > 0) {
 			anime = anime.filter((media) => {
 				var studio = media.studios.nodes.length > 0 ? media.studios.nodes[0].name : '';
@@ -95,7 +108,6 @@ class AnimeChartPanel extends Component {
 				} else {
 					return this.cleanString(media.title.userPreferred).indexOf(this.cleanString(this.props.animeList.search)) !== -1
 				}
-
 			});
 		}
 
@@ -166,6 +178,29 @@ class AnimeChartPanel extends Component {
 			});
 		}
 
+		return anime;
+	}
+
+	filterByRecentParams(anime) {
+		var now = moment(new Date());
+
+		anime = anime.filter((media) => {
+			var unixTime = media.nextAiringEpisode.airingAt;
+			console.log("this should be unix time", unixTime);
+			var end = moment.unix(unixTime)
+			var duration = moment.duration(now.diff(end));
+			var hoursDuration = duration.asHours();
+
+			return Math.abs(7*24 - Math.abs(hoursDuration)) <= this.state.recentParam;
+		});
+
+		return anime;
+	}
+
+	nextEpisodeRecent(anime) {
+		anime.sort(function(a, b){
+			return a.nextAiringEpisode.timeUntilAiring - b.nextAiringEpisode.timeUntilAiring;
+		});
 		return anime;
 	}
 
@@ -634,6 +669,46 @@ class AnimeChartPanel extends Component {
 		);
 	}
 
+	handleRecentSortChange(event, index, value){
+		this.setState({
+			recentParam: value
+		}, () => {
+			console.log("this is recentParam sort", this.state.recentParam);
+		});
+	} 
+
+	renderRecentSort() {
+		return(
+			<div>
+        <DropDownMenu
+          value={this.state.recentParam}
+          onChange={this.handleRecentSortChange}
+          style={styles.customWidth}
+          autoWidth={false}
+        >
+          <MenuItem value={12} primaryText="Within half a day" />
+          <MenuItem value={24} primaryText="Within 1 Day" />
+          <MenuItem value={48} primaryText="Within 2 Days" />
+          <MenuItem value={72} primaryText="Within 3 Days" />
+        </DropDownMenu>
+      </div>
+		);
+	}
+
+				// <div>
+    //     <DropDownMenu
+    //       value={this.state.recentParam}
+    //       onChange={this.handleRecentSortChange}
+    //       style={styles.customWidth}
+    //       autoWidth={false}
+    //     >
+    //       <MenuItem value=12 primaryText="Within half a day" />
+    //       <MenuItem value=24 primaryText="Within 1 Day" />
+    //       <MenuItem value=48 primaryText="Within 2 Days" />
+    //       <MenuItem value=72 primaryText="Within 3 Days" />
+    //     </DropDownMenu>
+    //   </div>
+
 	handleTypeChange(event, index, value){
 		this.setState({
 			type: value
@@ -719,6 +794,64 @@ class AnimeChartPanel extends Component {
 		}
 	}
 
+	renderCards() {
+		return(
+			<div className="cards">
+				{
+					(this.state.current)
+					? this.renderAnimeOrOtherChart("new")
+					: this.renderAnimeOrOtherChart("continuing")
+				}
+		  </div>
+		);
+	}
+
+	renderRecentlyAired() {
+		return(
+			<div>
+				<div className="center2">
+					<div className="groupDrop">
+						<div id="dropdown1">
+						</div>
+						<div id="dropdown2">
+							<p>Recently Aired</p>
+							<div>
+								{this.renderRecentSort()}
+							</div>
+						</div>
+					</div>
+				</div>
+				<div>
+					<div className="cards">
+						{this.renderRecentList()}
+					</div>
+				</div>
+			</div>
+		);
+	}
+
+	renderRecentOrNot() {
+		if(this.state.showRecent === true) {
+			return(
+				<div id="wrapper">
+					<div id="left">
+						{this.renderCards()}
+					</div>
+					<div id="right">
+						{this.renderRecentlyAired()}
+					</div>
+				</div>
+			);
+		} 
+		
+		else {
+			return(
+				<div>
+					{this.renderCards()}
+				</div>
+			);
+		}
+	}
 
 	render() {
 		return(
@@ -744,9 +877,9 @@ class AnimeChartPanel extends Component {
 								<div>
 									<div className="center2">
 										<div className="groupDrop">
-												<div id="dropdown1">
-													<RenderedListSearch />
-												</div>
+											<div id="dropdown1">
+												<RenderedListSearch />
+											</div>
 											  <div id="dropdown2">
 											  		{
 											  			(this.state.current)
@@ -761,7 +894,6 @@ class AnimeChartPanel extends Component {
 											            onClick={() => this.setState({ current: true })} 
 											          />
 											  		}
-
 											  		{
 											  			(this.state.showRecent)
 											  			? <RaisedButton 
@@ -779,13 +911,7 @@ class AnimeChartPanel extends Component {
 										</div>
 									</div>
 									<div>
-									  <div className="cards">
-											{
-												(this.state.current)
-												? this.renderAnimeOrOtherChart("new")
-												: this.renderAnimeOrOtherChart("continuing")
-											}
-									  </div>
+									  {this.renderRecentOrNot()}
 									</div>
 							  </div>
 							</div>
