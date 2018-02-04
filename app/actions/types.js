@@ -1,4 +1,8 @@
 export const RENDERED_SEARCH = "rendered_search";
+export const UPDATE_FORWARD_LIST = "update_forward_list";
+export const SEND_FORWARD_LIST = "send_forward_list";
+export const REMOVE_FORWARD_LIST = "remove_forward_list";
+export const CLEAR_FORWARD_LIST = "clear_forward_list";
 export const FETCH_ANIME = "fetch_anime";
 export const FETCH_CONTINUING_ANIME = "fetch_continuing_anime";
 export const FETCH_SUGGESTIONS = "fetch_suggestions";

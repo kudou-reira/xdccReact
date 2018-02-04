@@ -1,6 +1,7 @@
 import { ipcRenderer }  from 'electron';
 import { 
   RENDERED_SEARCH,
+  UPDATE_FORWARD_LIST,
   FETCH_ANIME,
   FETCH_CONTINUING_ANIME,
   FETCH_SUGGESTIONS, 

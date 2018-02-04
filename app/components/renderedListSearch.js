@@ -25,7 +25,7 @@ class RenderedListSearch extends Component {
   		<div>
   			<TextField
          	hintText="Enter query (title, studio, genre)"
-	        floatingLabelText="Searching for anime"
+	        floatingLabelText="Search for anime?"
 	        onChange={this.onTextChange}
 	      />
   		</div>
