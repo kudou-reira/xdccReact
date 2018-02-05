@@ -181,10 +181,6 @@ class AnimeChartPanel extends Component {
 				var genres = media.genres.length > 0 ? media.genres : [];
 
 				if(studio.length > 0 && genres.length > 0) {
-					// don't do indexof, cut up all the queries into an array,
-					// slice up the query as well separated by " " or ,
-					// turn both arrays into objects? check if each array element is at least an indexOf each genre studio array element
-					// this.processSearchQuery(media.title.userPreferred, studio, genres, this.props.animeList.search);
 					// return this.cleanString(media.title.userPreferred).indexOf(this.cleanString(this.props.animeList.search)) !== -1 || 
 					// 			this.cleanString(studio).indexOf(this.cleanString(this.props.animeList.search)) !== -1 || this.containsGenre(genres, this.cleanString(this.props.animeList.search));
 					return this.processSearchQuery(media.title.userPreferred, studio, genres, this.props.animeList.search);
