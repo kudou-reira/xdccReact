@@ -1,13 +1,15 @@
 
 # React Front End for https://github.com/kudou-reira/xdcc2
 
-still very rough, working on using anilist graphql api for currently airing series.
+finished working on using anilist graphql api for currently airing series.
 
-file transfer support through node-irc built in, but only saves in root of directory (MyApp) so far. use at your own risk. illegal file sharing is not condoned.
+file transfer support through node-irc built in, folderPath selectable with shell explorer
 
-demo picture here https://imgur.com/Y574aan
+use at your own risk. illegal file sharing is not condoned!!! this project was created as a test to see how powerful javascript is when itruns on a desktop environment.
 
-created with electron, download prototype here and start MyApp https://drive.google.com/file/d/1yH9pqTvdayDpZqgsettXGRG6sLpwIAjY/view?usp=sharing
+demo picture here https://imgur.com/a/B75Yl
+
+created with electron, download prototype here and start MyApp https://drive.google.com/file/d/1Gu2ib198i3i3jBvWQvlU7yB5HyRsXkIy/view?usp=sharing
 
 electron-react-redux-boilerplate fork tailored to personal preference
 

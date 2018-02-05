@@ -321,6 +321,8 @@ class AnimeChartPanel extends Component {
 		return anime;
 	}
 
+	// put {this.renderSources()} in the gap of divs
+
 	renderAnimeSeries(anime) {
 		if(this.props.animeList.anime !== null) {
 			anime = anime.map((anime) => {
@@ -335,7 +337,8 @@ class AnimeChartPanel extends Component {
 						<div className="fade">
 							<hr />
 							<div>
-								{this.renderSources()}
+								
+
 							</div>
 							<hr />
 						</div>
@@ -945,7 +948,6 @@ addButtonClicked() {
 					<div id="right">
 						{this.renderRecentlyAired()}
 					</div>
-					<div className="divider"></div>
 				</div>
 			);
 		} 
