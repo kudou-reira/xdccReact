@@ -65,7 +65,6 @@ class AnimeChartPanel extends Component {
 
   processSearchQuery(title, studio, genres, query) {
   	var cleanedArr = [];
-  	var contains = [];
   	var amalgam = [];
   	var numberOfTrue = 0;
   	var trueCounter = 0;
@@ -80,29 +79,22 @@ class AnimeChartPanel extends Component {
 		amalgam = amalgam.filter(Boolean);
 
 		cleanedArr = this.formatQuery(query);
-		// if(cleanedArr.length > 0) {
-		// 	cleanedArr = cleanedArr.filter(Boolean);
-		// }
+		cleanedArr = cleanedArr.filter(Boolean);
+
 		console.log("this is amalgam", amalgam);
 
-
-		// separate into cleaned objects?
 		for(let queryStr of cleanedArr) {
 			for(let amalgamStr of amalgam) {
-				contains.push(amalgamStr.indexOf(queryStr) !== -1)
+				if(amalgamStr.indexOf(queryStr) !== -1) {
+					trueCounter++;
+				}
 			}
 		}
 
 		console.log("this is amalgam", amalgam);
 		console.log("this is the cleaned query", cleanedArr);
-		console.log("this is contains", contains);
 
 		numberOfTrue = cleanedArr.length;
-		for(let val of contains) {
-			if(val === true) {
-				trueCounter++;
-			}
-		}
 
 		if(trueCounter === numberOfTrue) {
 			return true;
@@ -133,21 +125,6 @@ class AnimeChartPanel extends Component {
 		if(str.length > 0) {
 			return str.replace(/[^\w]/g, "").toLowerCase();
 		}
-	}
-
-	containsGenre(genres, search) {
-		var cleanedGenres = [];
-		for(let genre of genres) {
-			cleanedGenres.push(this.cleanString(genre));
-		}
-
-		for(let genre of cleanedGenres) {
-			if(genre.indexOf(search) !== -1) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	renderRecentList() {
@@ -181,8 +158,6 @@ class AnimeChartPanel extends Component {
 				var genres = media.genres.length > 0 ? media.genres : [];
 
 				if(studio.length > 0 && genres.length > 0) {
-					// return this.cleanString(media.title.userPreferred).indexOf(this.cleanString(this.props.animeList.search)) !== -1 || 
-					// 			this.cleanString(studio).indexOf(this.cleanString(this.props.animeList.search)) !== -1 || this.containsGenre(genres, this.cleanString(this.props.animeList.search));
 					return this.processSearchQuery(media.title.userPreferred, studio, genres, this.props.animeList.search);
 				} else {
 					return this.processSearchQuery(media.title.userPreferred, "", "", this.props.animeList.search);
