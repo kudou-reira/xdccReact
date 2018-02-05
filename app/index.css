@@ -124,6 +124,16 @@ p {
   text-align: center;
 }
 
+.divider{
+    left:50%;
+    top:10%;
+    bottom:10%;
+    border-left:2.25px solid black;
+    margin-left: 0.5%;
+    margin-right: 0.5%;
+    opacity: 0.2;
+}
+
 .centerSVG {
 	position: relative;
 	left: 50%;

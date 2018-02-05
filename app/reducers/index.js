@@ -9,6 +9,7 @@ import startDownloadReducer from './startDownloadReducer';
 import animeListReducer from './animeListReducer';
 import shellPathReducer from './shellPathReducer';
 import forwardListReducer from './forwardListReducer';
+import messageReducer from './messageReducer';
 
 const rootReducer = combineReducers({
   search: searchReducer,
@@ -17,7 +18,8 @@ const rootReducer = combineReducers({
   startDownload: startDownloadReducer,
   animeList: animeListReducer,
   shellPath: shellPathReducer,
-  forwardList: forwardListReducer
+  forwardList: forwardListReducer,
+  message: messageReducer
 });
 
 const store = createStore(rootReducer, {}, applyMiddleware(thunk, logger));

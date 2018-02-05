@@ -14,9 +14,7 @@ class DownloadListPanel extends Component {
 		super(props);
 		this.state = {
 			open: false,
-			downloadBots: [],
-      copied: false,
-      valueCopied: []
+			downloadBots: []
 		}
 
 		this.handleNestedListToggle = this.handleNestedListToggle.bind(this);
@@ -24,7 +22,6 @@ class DownloadListPanel extends Component {
 		this.clearAllDownloads = this.clearAllDownloads.bind(this);
 		this.startDownloads = this.startDownloads.bind(this);
     this.onMessageClicked = this.onMessageClicked.bind(this);
-    this.setCopy = this.setCopy.bind(this);
 	}
 
 	handleNestedListToggle(item) {
@@ -49,7 +46,10 @@ class DownloadListPanel extends Component {
 
   onMessageClicked(message) {
     //alter this to add to an array
-    var tempHoldMessages = this.state.valueCopied;
+    var tempHoldMessages = this.props.message.messages;
+    if(this.props.message.messages === null) {
+      tempHoldMessages = [];
+    }
 
     var inArr = _.includes(tempHoldMessages, message);
 
@@ -57,33 +57,22 @@ class DownloadListPanel extends Component {
 
     if(inArr === false) {
       tempHoldMessages.push(message);
-
-      this.setState({
-        valueCopied: tempHoldMessages
+      this.props.updateMessageQueue(tempHoldMessages, () => {
+        console.log("these are new props", this.props.message.messages);
       });
-    }
-  }
+    };
 
-  setCopy() {
-    this.setState({ copied: true });
-    setTimeout(function(){
-         this.setState({copied: false});
-    }.bind(this),2000);
+      // should make this into a reducer
   }
 
   renderIconButton(message) {
     return(
       <div>
-        <CopyToClipboard 
-          text={this.state.valueCopied}
-          onCopy={ () => this.setCopy() }
-        >
-          <RaisedButton 
-            label="Copy message call" 
-            style={{marginTop: 5.5, marginRight: 5}}
-            onClick={() => this.onMessageClicked(message)} 
-          />
-        </CopyToClipboard>
+        <RaisedButton 
+          label="Add message call" 
+          style={{marginTop: 5.5, marginRight: 5}}
+          onClick={() => this.onMessageClicked(message)} 
+        />
       </div>
     );
   }
@@ -172,27 +161,30 @@ class DownloadListPanel extends Component {
 		return downloadList;
 	}
 
+
   renderFilledOrNot() {
     var returnDiv;
-    if(this.state.valueCopied.length > 0) {
-      returnDiv = (
-        <div id="wrapper">
-          <div id="left80">
-            This is the download list
-            {this.renderClearButton()}
-            {this.renderStartButton()}
-            <div>
-              <List>
-                <Subheader>Download List</Subheader>
-                {this.renderDownloadList()}
-              </List>
+    if(this.props.message.messages !== null) {
+      if(this.props.message.messages.length > 0) {
+        returnDiv = (
+          <div id="wrapper">
+            <div id="left">
+              This is the download list
+              {this.renderClearButton()}
+              {this.renderStartButton()}
+              <div>
+                <List>
+                  <Subheader>Download List</Subheader>
+                  {this.renderDownloadList()}
+                </List>
+              </div>
+            </div>
+            <div id="right">
+              <Clipboard />
             </div>
           </div>
-          <div id="right">
-            <Clipboard />
-          </div>
-        </div>
-      );
+        );
+      }
     }
 
     else {
@@ -211,19 +203,25 @@ class DownloadListPanel extends Component {
       );
     }
 
-    return returnDiv
+    return returnDiv;
   }
 
 	render() {
 		console.log("this is the downloadlist panel", this.props);
-    console.log("these are the copied calls", this.state.valueCopied);
+    console.log("these are props for messages", this.props.message.messages);
 		return(
       <div>
-        {this.state.copied ? <span style={{color: 'red'}}>Copied.</span> : null}
+
   			{this.renderFilledOrNot()}
       </div>
 		);
 	}
 }
 
-export default connect(null, actions)(DownloadListPanel);
+function mapStateToProps(state) {
+  return {
+    message: state.message
+  }
+}
+
+export default connect(mapStateToProps, actions)(DownloadListPanel);

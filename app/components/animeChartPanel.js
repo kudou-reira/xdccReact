@@ -3,8 +3,10 @@ import { connect } from 'react-redux';
 import * as actions from '../actions';
 import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
+import {List, ListItem} from 'material-ui/List';
 import RaisedButton from 'material-ui/RaisedButton';
 import RenderedListSearch from './renderedListSearch';
+import _ from 'lodash';
 
 var moment = require("moment");
 var momentDurationFormatSetup = require("moment-duration-format");
@@ -30,7 +32,8 @@ class AnimeChartPanel extends Component {
 			current: true,
 			showRecent: false,
 			searchTitle: '',
-			recentParam: 24
+			recentParam: 24,
+			open: false
 		}
 
 		this.handleStartDateChange = this.handleStartDateChange.bind(this);
@@ -39,6 +42,9 @@ class AnimeChartPanel extends Component {
 		this.handleSortChange = this.handleSortChange.bind(this);
 		this.handleTypeChange = this.handleTypeChange.bind(this);
 		this.handleRecentSortChange = this.handleRecentSortChange.bind(this);
+
+		this.addButtonClicked = this.addButtonClicked.bind(this);
+		this.handleNestedListToggle = this.handleNestedListToggle.bind(this);
 	}
 
 	componentDidMount() {
@@ -49,6 +55,78 @@ class AnimeChartPanel extends Component {
 		console.log("this is the continuing season", this.state.continuingSeason);
 		console.log("this is the continuing date", this.state.continuingDate);
 		this.props.fetchContinuingAnime(this.state.continuingSeason.toUpperCase(), this.state.continuingDate);
+	}
+
+	handleNestedListToggle(item) {
+    this.setState({
+      open: item.state.open
+    });
+  };
+
+  processSearchQuery(title, studio, genres, query) {
+  	var cleanedArr = [];
+  	var contains = [];
+  	var amalgam = [];
+  	var numberOfTrue = 0;
+  	var trueCounter = 0;
+
+  	title = this.cleanString(title);
+  	studio = this.cleanString(studio);
+		genres = this.processGenres(genres);
+
+		amalgam = genres;
+		amalgam.push(title);
+		amalgam.push(studio);
+		amalgam = amalgam.filter(Boolean);
+
+		cleanedArr = this.formatQuery(query);
+		// if(cleanedArr.length > 0) {
+		// 	cleanedArr = cleanedArr.filter(Boolean);
+		// }
+		console.log("this is amalgam", amalgam);
+
+
+		// separate into cleaned objects?
+		for(let queryStr of cleanedArr) {
+			for(let amalgamStr of amalgam) {
+				contains.push(amalgamStr.indexOf(queryStr) !== -1)
+			}
+		}
+
+		console.log("this is amalgam", amalgam);
+		console.log("this is the cleaned query", cleanedArr);
+		console.log("this is contains", contains);
+
+		numberOfTrue = cleanedArr.length;
+		for(let val of contains) {
+			if(val === true) {
+				trueCounter++;
+			}
+		}
+
+		if(trueCounter === numberOfTrue) {
+			return true;
+		}
+
+		return false;
+	}
+
+	processGenres(genres) {
+		var cleanedGenres = [];
+		for(let genre of genres) {
+			cleanedGenres.push(this.cleanString(genre));
+		}
+		return cleanedGenres;
+	}
+
+	formatQuery(query) {
+		var queryArr = query.split(",");
+		var cleanedArr = [];
+		for(let str of queryArr) {
+			cleanedArr.push(this.cleanString(str));
+		}
+
+		return cleanedArr;
 	}
 
 	cleanString(str) {
@@ -103,10 +181,15 @@ class AnimeChartPanel extends Component {
 				var genres = media.genres.length > 0 ? media.genres : [];
 
 				if(studio.length > 0 && genres.length > 0) {
-					return this.cleanString(media.title.userPreferred).indexOf(this.cleanString(this.props.animeList.search)) !== -1 || 
-								this.cleanString(studio).indexOf(this.cleanString(this.props.animeList.search)) !== -1 || this.containsGenre(genres, this.cleanString(this.props.animeList.search));
+					// don't do indexof, cut up all the queries into an array,
+					// slice up the query as well separated by " " or ,
+					// turn both arrays into objects? check if each array element is at least an indexOf each genre studio array element
+					// this.processSearchQuery(media.title.userPreferred, studio, genres, this.props.animeList.search);
+					// return this.cleanString(media.title.userPreferred).indexOf(this.cleanString(this.props.animeList.search)) !== -1 || 
+					// 			this.cleanString(studio).indexOf(this.cleanString(this.props.animeList.search)) !== -1 || this.containsGenre(genres, this.cleanString(this.props.animeList.search));
+					return this.processSearchQuery(media.title.userPreferred, studio, genres, this.props.animeList.search);
 				} else {
-					return this.cleanString(media.title.userPreferred).indexOf(this.cleanString(this.props.animeList.search)) !== -1
+					return this.processSearchQuery(media.title.userPreferred, "", "", this.props.animeList.search);
 				}
 			});
 		}
@@ -403,16 +486,80 @@ class AnimeChartPanel extends Component {
 		}
 	}
 
+addButtonClicked() {
+	// they're in array format
+  	console.log("this is the add button in anime chart panel");
+  	var tempArr = [];
+  	tempArr.push(suggestion);
+  	if (this.props.tempQueue.stack === null) {
+  		this.props.updateTempQueue(tempArr, () => {
+  			console.log("this is suggestion results tempqueue", this.props.tempQueue.stack);
+  		});	
+  	}
+
+  	else {
+  		// get the redux store and append the new value if it's not in it
+  		var tempSuggestions = this.props.tempQueue.stack;
+  		if(!_.includes(tempSuggestions, suggestion)) {
+  			tempArr = tempSuggestions;
+  			tempArr.push(suggestion);
+  		  this.props.updateTempQueue(tempArr, () => {
+  		  	console.log("this is suggestion results tempqueue", this.props.tempQueue.stack);
+  		  });
+  		}
+  	}
+	
+  }
+
+  generateListContent() {
+  	return(
+  		[
+  			<ListItem>
+					inner list
+				</ListItem>
+  		]
+  	);
+  }
+
+	renderIconButtons() {
+  	return(
+      <div>
+  			<RaisedButton 
+		  		label="Add to queue" 
+		  		style={{marginTop: 5.5, marginRight: 5}}
+		  		onClick={() => this.addButtonClicked()} 
+		  	/>
+      </div>
+  	);
+  }
+
+	renderListItem() {
+		return(
+			<ListItem
+        rightIconButton={
+        	this.renderIconButtons()
+        }
+        primaryText={"hi"}
+        primaryTogglesNestedList={true}
+        nestedItems={this.generateListContent()}
+      />
+		);
+	}
+
 	renderSources() {
 		return(
 			<div id="wrapper2" className="bottomMargin">
 				<div id="wide" className="center">
 					<p>Available Sources</p>
+					Up to episode
 				</div>
 				<div id="narrow">
 					<div className="center">
-						Up to episode
+						testHold
 					</div>
+					<List>
+						{this.renderListItem()}
+					</List>
 				</div>
 			</div>
 		);
@@ -695,20 +842,6 @@ class AnimeChartPanel extends Component {
 		);
 	}
 
-				// <div>
-    //     <DropDownMenu
-    //       value={this.state.recentParam}
-    //       onChange={this.handleRecentSortChange}
-    //       style={styles.customWidth}
-    //       autoWidth={false}
-    //     >
-    //       <MenuItem value=12 primaryText="Within half a day" />
-    //       <MenuItem value=24 primaryText="Within 1 Day" />
-    //       <MenuItem value=48 primaryText="Within 2 Days" />
-    //       <MenuItem value=72 primaryText="Within 3 Days" />
-    //     </DropDownMenu>
-    //   </div>
-
 	handleTypeChange(event, index, value){
 		this.setState({
 			type: value
@@ -837,9 +970,11 @@ class AnimeChartPanel extends Component {
 					<div id="left">
 						{this.renderCards()}
 					</div>
+					<div className="divider"></div>
 					<div id="right">
 						{this.renderRecentlyAired()}
 					</div>
+					<div className="divider"></div>
 				</div>
 			);
 		} 

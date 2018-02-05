@@ -18,7 +18,7 @@ export default (state = INITIAL_STATE, action) => {
     case REMOVE_FORWARD_LIST:
       return {
         ...state,
-        download: state.download.filter(item => item !== action.payload)
+        forwardList: state.forwardList.filter(item => item !== action.payload)
       }
     case CLEAR_FORWARD_LIST:
       return {...state, forwardList: null}

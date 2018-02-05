@@ -124,8 +124,8 @@ app.on('ready', async () => {
   });
 
   downloadWindow = new BrowserWindow({ 
-    width: 1000, 
-    height: 600,
+    width: 1400, 
+    height: 800,
     minWidth: 640,
     minHeight: 480,
     show: false ,
@@ -517,37 +517,25 @@ console.log("this is processsssssssssssssssssssss", process.cwd());
 
 function startXDCC(singleBot, callback) {
 
-  // console.log("this is singleBot in connect xdcc", singleBot);
-
-  // console.log("this is singleBot bot to use", singleBot.BotToUse);
-  // console.log("this is singleBot pack number", singleBot.PackNumber);
-
-  // console.log("this is the packName in connectXDCC", packName);
-  // console.log("this is the packNumber in connectXDCC", packNumber);
-
   var ProgressBar = require('progress');
 
   var irc = require('xdcc').irc;
 
 
-  if(isDevelopment) {
-    folderPath = 'F:\anime';
-  }
+  // if(isDevelopment) {
+  //   folderPath = 'F:\anime';
+  // }
 
-  else {
-    // path = process.cwd();
-    // path = require('path').basename(__dirname);
-    folderPath = 'F:\anime';
-  }
+  // else {
+  //   // path = process.cwd();
+  //   // path = require('path').basename(__dirname);
+  //   folderPath = 'F:\anime';
+  // }
 
   // path = __dirname;
 
 
   console.log("this is the path", path);
-
-  // var normalPath = '.'
-  // var hostUser = 'NIBL|Arutha';
-  // var pack = 5252;
 
 
   var user = 'desu' + Math.random().toString(36).substr(7, 3);
@@ -576,7 +564,7 @@ function startXDCC(singleBot, callback) {
   client.on('join', function(channel, nick, message) {
     if (nick !== user) return;
     console.log('Joined', channel);
-    client.getXdcc(hostUser, 'xdcc send #' + pack, path);
+    client.getXdcc(hostUser, 'xdcc send #' + pack, folderPath);
   });
 
   client.on('xdcc-connect', function(meta) {

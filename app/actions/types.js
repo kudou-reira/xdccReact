@@ -1,3 +1,6 @@
+export const UPDATE_MESSAGE_QUEUE = "update_message_queue";
+export const DELETE_MESSAGE_QUEUE = "delete_message_queue";
+export const CLEAR_MESSAGE_QUEUE = "clear_message_queue";
 export const RENDERED_SEARCH = "rendered_search";
 export const UPDATE_FORWARD_LIST = "update_forward_list";
 export const SEND_FORWARD_LIST = "send_forward_list";

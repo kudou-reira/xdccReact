@@ -1,5 +1,8 @@
 import { ipcRenderer }  from 'electron';
 import { 
+  UPDATE_MESSAGE_QUEUE,
+  DELETE_MESSAGE_QUEUE,
+  CLEAR_MESSAGE_QUEUE,
   RENDERED_SEARCH,
   UPDATE_FORWARD_LIST,
   FETCH_ANIME,
@@ -101,6 +104,27 @@ export const fetchSuggestions = tempTitle => dispatch => {
   });
 };
 
+export const updateMessageQueue = (queue) => {
+  return({
+    type: UPDATE_MESSAGE_QUEUE,
+    payload: queue
+  });
+}
+
+export const deleteMessageQueue = (item) => {
+  return({
+    type: DELETE_MESSAGE_QUEUE,
+    payload: item
+  });
+}
+
+export const clearMessageQueue = () => {
+  return({
+    type: CLEAR_MESSAGE_QUEUE,
+    payload: null
+  });
+}
+
 export const updateTempQueue = (queue) => {
   return({
     type: UPDATE_TEMP_QUEUE,
@@ -118,7 +142,7 @@ export const deleteTempQueue = (item) => {
 export const clearTempQueue = () => {
   return({
     type: CLEAR_TEMP_QUEUE,
-    payload: []
+    payload: null
   });
 }
 

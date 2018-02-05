@@ -40,7 +40,7 @@ class TempSearchQueuePanel extends Component {
 					  		label="Remove" 
 					  		style={{marginTop: 5.5, marginRight: 5}}
 					  		onClick={() => this.removeQueue(temp)} 
-					  	/>
+				  		/>
 	          }
 	          primaryText={temp}
 	          primaryTogglesNestedList={true}

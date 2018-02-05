@@ -13,9 +13,13 @@ export default (state = INITIAL_STATE, action) => {
   	case UPDATE_TEMP_QUEUE:
   		return {...state, stack: action.payload}
   	case DELETE_TEMP_QUEUE:
+      var tempStack = state.stack.filter(item => item !== action.payload);
+      if(tempStack.length === 0) {
+        tempStack = null;
+      }
       return {
         ...state,
-        stack: state.stack.filter(item => item !== action.payload)
+        stack: tempStack
       }
     case CLEAR_TEMP_QUEUE:
       return {...state, stack: action.payload}
