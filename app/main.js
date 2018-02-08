@@ -390,13 +390,32 @@ ipcMain.on('start:downloads', (e, queue) => {
     downloadingWindow.show();
     downloadingWindow.webContents.send('start:downloadsDone', result);
 
-    // add channels to, search through channels array!!!
-    // FOR ALL POSSIBLE CHANNELS AHHH
-
     // result has to send back the chopped up bots into 2
     console.log("this is the length of result in ipcMain", result.optimizedBots.length);
     console.log("these are the values in result", result);
 
+    // add channels to search through channels array!!!
+    // for now, added default channels to join, but there is possible edge case that a channel won't exist
+    var channels = [];
+
+    // for (var i = 0; i < result.optimizedBots.length; i++) {
+    //   for (var j = 0; j < result.optimizedBots[i].length; j++) {
+    //     var singleBotChannel = result.optimizedBots[i][j].channelToUse;
+    //     var singleTask = botInstance.xdcc({ botNick: singleBot.BotToUse, packId: singleBot.PackNumber })
+    //       .then(function(xdccInstance) {})
+    //       .catch(function(err) {
+    //           if(err.code) {
+    //               console.error('Error ' + err.code + ': ' +  err.message);
+    //           }
+    //           else {
+    //               console.error(err);
+    //           }
+    //       });
+    //     containerTasks.push(singleTask);
+    //   }
+    //   allTasks.push(containerTasks)
+    //   containerTasks = [];
+    // }
 
     var containerTasks = [];
     var allTasks = [];
@@ -409,7 +428,7 @@ ipcMain.on('start:downloads', (e, queue) => {
           , port: 6697
           , autoRejoin: true
           , autoConnect: true
-          , channels: [ '#HorribleSubs' ]
+          , channels: [ '#HorribleSubs', '#Exiled-Destiny', '#Anime-Koi', '#commie-subs', '#doki', '#evetaku', '#FFFpeeps', '#UNDERWATER', '#UTW', '#vivid', '#WhyNot?', '#KickAssAnime']
           , secure: true
           , selfSigned: true
           , certExpired: true
@@ -417,7 +436,7 @@ ipcMain.on('start:downloads', (e, queue) => {
           , encoding: 'UTF-8'
           // xdcc specific options
           , progressInterval: 3
-          , destPath: folderPath,
+          , destPath: folderPath
           , resume: false
           , acceptUnpooled: true
           , closeConnectionOnDisconnect: false
@@ -440,7 +459,8 @@ ipcMain.on('start:downloads', (e, queue) => {
           var fileName = xdccInstance.xdccInfo.fileName;
           var dataProgress = {
             fileName: fileName,
-            percent: percent
+            percent: percent,
+            completed: false
           }
 
           console.log("this is the progress of the file named", fileName);
@@ -448,12 +468,24 @@ ipcMain.on('start:downloads', (e, queue) => {
           downloadingWindow.webContents.send('connect:XDCC', dataProgress);
         });
 
-        botInstance.addListener('xdcc-complete', function(xdccInstance) {
+        botInstance.addListener('xdcc-dlerror', function(xdccInstance) {
           console.log("xdcc download is complete for", xdccInstance.xdccInfo.fileName);
-          var fileName = xdccInstance.xdccInfo.fileName + " has completed";
+          var fileName = xdccInstance.xdccInfo.fileName + " has encountered an error";
           var dataProgress = {
             fileName: fileName,
-            percent: 100
+            error: xdccInstance.xdccInfo.error,
+            completed: false
+          }
+          downloadingWindow.webContents.send('connect:XDCC', dataProgress);
+        });
+
+        botInstance.addListener('xdcc-complete', function(xdccInstance) {
+          console.log("xdcc download is complete for", xdccInstance.xdccInfo.fileName);
+          var fileName = xdccInstance.xdccInfo.fileName
+          var dataProgress = {
+            fileName: fileName,
+            completed: true,
+            filePath: xdccInstance.xdccInfo.location
           }
           downloadingWindow.webContents.send('connect:XDCC', dataProgress);
         });
@@ -478,13 +510,9 @@ ipcMain.on('start:downloads', (e, queue) => {
         }
 
         console.log("this is allTasks", allTasks);
-        // all tasks has pairs of tasks now
 
         var allParallel = [];
 
-
-
-        // why doesn't this work...
         for(var k = 0; k < allTasks.length; k++) {
           var singleParallel = async.parallel(allTasks[k], function(err, results) {
             console.log("this is the tasks parallel");
