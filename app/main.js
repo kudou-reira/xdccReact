@@ -390,6 +390,9 @@ ipcMain.on('start:downloads', (e, queue) => {
     downloadingWindow.show();
     downloadingWindow.webContents.send('start:downloadsDone', result);
 
+    // add channels to, search through channels array!!!
+    // FOR ALL POSSIBLE CHANNELS AHHH
+
     // result has to send back the chopped up bots into 2
     console.log("this is the length of result in ipcMain", result.optimizedBots.length);
     console.log("these are the values in result", result);
@@ -397,102 +400,101 @@ ipcMain.on('start:downloads', (e, queue) => {
 
     var containerTasks = [];
     var allTasks = [];
-    for (var i = 0; i < result.optimizedBots.length; i++) {
-      for (var j = 0; j < result.optimizedBots[i].length; j++) {
-        var singleBot = result.optimizedBots[i][j];
-        var singleTask = startXDCC.bind(null, singleBot);
-        containerTasks.push(singleTask);
-      }
-      allTasks.push(containerTasks)
-      containerTasks = [];
-    }
 
-    console.log("this is allTasks", allTasks);
-    // all tasks has pairs of tasks now
+    var ircXdcc = require('irc-xdcc')
+    // set options object
+      , ircOptions = {
+            userName: 'ircClient'
+          , realName: 'irc Client'
+          , port: 6697
+          , autoRejoin: true
+          , autoConnect: true
+          , channels: [ '#HorribleSubs' ]
+          , secure: true
+          , selfSigned: true
+          , certExpired: true
+          , stripColors: true
+          , encoding: 'UTF-8'
+          // xdcc specific options
+          , progressInterval: 3
+          , destPath: './dls'
+          , resume: false
+          , acceptUnpooled: true
+          , closeConnectionOnDisconnect: false
+        }
+    // used to store bot instance
+      , botInstance
+      ;
 
-    var allParallel = [];
-
-
-
-    // why doesn't this work...
-    // for(var k = 0; k < allTasks.length; k++) {
-    //   var singleParallel = async.parallel(allTasks[k], function(err, results) {
-    //     console.log("this is the tasks parallel");
-    //     console.log("these are the results in tasks parallel", results);
-    //   });
-    //   allParallel.push(singleParallel);
-    // }
-
-    var test1 = allTasks[0];
-    console.log("this is alltasks[0]", test1);
-
-    // unused
-    async.parallel(test1, function(err, results) {
-      console.log("this is the tasks parallel");
-      console.log("these are the results in tasks parallel", results);
-    });
+    ircXdcc('irc.rizon.net', 'myBotNick', ircOptions)
+      .then(function(instance) {
+        // a way would be to make botInstance1, botInstance2, botInstance3, botInstance4, etc
+        // measure the array of calls you get
+        botInstance = instance;
 
 
+        botInstance.addListener('registered', function() { console.log('bot connected'); });
+        botInstance.addListener('xdcc-progress', function(xdccInstance, progress) {
+          // console.log("this is xdccInstance", xdccInstance);
+          var percent = progress/xdccInstance.xdccInfo.fileSize * 100;
+          var fileName = xdccInstance.xdccInfo.fileName;
+          var dataProgress = {
+            fileName: fileName,
+            percent: percent
+          }
 
-    // console.log("this is all parallel", allParallel);
+          console.log("this is the progress of the file named", fileName);
+          console.log(percent);
+          downloadingWindow.webContents.send('connect:XDCC', dataProgress);
+        });
 
-    // async.series(allParallel, function(err, results) {
-    //   console.log("this is the async series");
-    //   console.log("this is the async series results", results);
-    // });
+        botInstance.addListener('xdcc-complete', function(xdccInstance) {
+          console.log("xdcc download is complete for", xdccInstance.xdccInfo.fileName);
+        });
 
+        for (var i = 0; i < result.optimizedBots.length; i++) {
+          for (var j = 0; j < result.optimizedBots[i].length; j++) {
+            var singleBot = result.optimizedBots[i][j];
+            var singleTask = botInstance.xdcc({ botNick: singleBot.BotToUse, packId: singleBot.PackNumber })
+              .then(function(xdccInstance) {})
+              .catch(function(err) {
+                  if(err.code) {
+                      console.error('Error ' + err.code + ': ' +  err.message);
+                  }
+                  else {
+                      console.error(err);
+                  }
+              });
+            containerTasks.push(singleTask);
+          }
+          allTasks.push(containerTasks)
+          containerTasks = [];
+        }
 
-    // async.eachSeries(allParallel, function (eachParallel, done) {
-    //     setTimeout(function () {
-    //        eachParallel;
-    //        done();
-    //     }, 300000);
-    // }, function (err) {
-      
-    // });
+        console.log("this is allTasks", allTasks);
+        // all tasks has pairs of tasks now
 
-
-
-
-    // trying out whilst
-
-    // var i = 0;
-    // async.whilst(
-    //   // test to perform next iteration
-    //   function() { return i <= allParallel.length-1; },
-
-    //   // iterated function
-    //   // call `innerCallback` when the iteration is done
-    //   function(innerCallback) {
-    //       allParallel[i];
-
-    //       setTimeout(function() { i++; innerCallback(); }, 300000);
-    //   },
-
-    //   // when all iterations are done, call `callback`
-    //   callback
-    // );
-
-
+        var allParallel = [];
 
 
 
-      //     var singleBot = result.optimizedBots[i];
-      // // arguments are not bound to startXDCC!!!!
-      // var singleTask = startXDCC.bind(null, singleBot);
-      // tasks.push(singleTask);
+        // why doesn't this work...
+        for(var k = 0; k < allTasks.length; k++) {
+          var singleParallel = async.parallel(allTasks[k], function(err, results) {
+            console.log("this is the tasks parallel");
+            console.log("these are the results in tasks parallel", results);
+          });
+          allParallel.push(singleParallel);
+        }
 
-    // console.log("this is the tasks array", tasks);
-    
+        // unused
+        async.parallel(test1, function(err, results) {
+          console.log("this is the tasks parallel");
+          console.log("these are the results in tasks parallel", results);
+        });
+    })
+    .catch(console.error.bind(console));
 
-    // now that you have the tasks array, cut it all up by twos
-    // maybe should cut it up in the back end
-
-    // console.log("going to start connection to irc");
-
-    // async.parallel(tasks, function(err, results) {
-    //   console.log("this is the tasks parallel");
-    // });
   });
 
 });
@@ -514,119 +516,6 @@ console.log("this is path", fullPath);
 
 console.log("this is processsssssssssssssssssssss", process.cwd());
 
-
-function startXDCC(singleBot, callback) {
-
-  var ProgressBar = require('progress');
-
-  var irc = require('xdcc').irc;
-
-
-  // if(isDevelopment) {
-  //   folderPath = 'F:\anime';
-  // }
-
-  // else {
-  //   // path = process.cwd();
-  //   // path = require('path').basename(__dirname);
-  //   folderPath = 'F:\anime';
-  // }
-
-  // path = __dirname;
-
-
-  console.log("this is the path", path);
-
-
-  var user = 'desu' + Math.random().toString(36).substr(7, 3);
-
-  var hostUser = singleBot.BotToUse;
-  var pack = singleBot.PackNumber;
-  var channelToJoin = '#' + singleBot.ChannelToJoin;
-  var progress;
-
-
-  var client = new irc.Client('irc.rizon.net', user, {
-    channels: [channelToJoin],
-    userName: user,
-    realName: user,
-    debug: false
-  });
-
-  // just call client.getXdcc without putting it in the client.on('join')
-  // connect in another function, then do whatever
-  // get rid of the client.on join socket then?
-  // move client.on join into the connectXDCC method
-  // need to pass the client as a param or make it global
-
-  // client.getXdcc(hostUser, 'xdcc send #' + pack, path);
-
-  client.on('join', function(channel, nick, message) {
-    if (nick !== user) return;
-    console.log('Joined', channel);
-    client.getXdcc(hostUser, 'xdcc send #' + pack, folderPath);
-  });
-
-  client.on('xdcc-connect', function(meta) {
-    console.log('Connected: ' + meta.ip + ':' + meta.port);
-    progress = new ProgressBar('Downloading... [:bar] :percent, :etas remaining', {
-      incomplete: ' ',
-      total: meta.length,
-      width: 20
-    });
-    // console.log("this is the progressBar", progress);
-  });
-
-  var last = 0;
-  client.on('xdcc-data', function(received, details) {
-
-    // console.log("this is deatails", details);
-    // console.log("this is details length", details.length);
-    // console.log("this is percent received", percent);
-
-    var percent = (received/details.length)*100
-
-    var dataProgress = {
-      fileName: details.file,
-      percent: percent
-    }
-    // how to send this information to ipcRenderer
-    // probably need to make this an object with the title so it can find the file
-
-    // maybe rate limit this call
-    downloadingWindow.webContents.send('connect:XDCC', dataProgress);
-    //
-    progress.tick(received - last);
-    last = received;
-  });
-
-  client.on('xdcc-end', function(received) {
-    console.log('Download completed');
-    // disconnect from server here
-    callback(null, 1);
-    client.disconnect('disconnecting from server', () => {
-      console.log('disconnecting!!!');
-    });
-  });
-
-  client.on('notice', function(from, to, message) {
-    if (to == user && from == hostUser) {
-      console.log("[notice]", message);
-    }
-  });
-
-  client.on('error', function(message) {
-    console.error(message);
-  });
-
-  client.addListener('message', function (from, to, message) {
-      console.log(from + ' => ' + to + ': ' + message);
-  });
-}
-
-// need a reducer to send out on component did mount to get the current file location
-// that will be another ipcMain.on
-// update the path here too
 
 ipcMain.on('shell:default', (event, empty) => {
   console.log("this is shell default");
