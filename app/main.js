@@ -417,7 +417,7 @@ ipcMain.on('start:downloads', (e, queue) => {
           , encoding: 'UTF-8'
           // xdcc specific options
           , progressInterval: 3
-          , destPath: './dls'
+          , destPath: folderPath,
           , resume: false
           , acceptUnpooled: true
           , closeConnectionOnDisconnect: false
@@ -450,6 +450,12 @@ ipcMain.on('start:downloads', (e, queue) => {
 
         botInstance.addListener('xdcc-complete', function(xdccInstance) {
           console.log("xdcc download is complete for", xdccInstance.xdccInfo.fileName);
+          var fileName = xdccInstance.xdccInfo.fileName + " has completed";
+          var dataProgress = {
+            fileName: fileName,
+            percent: 100
+          }
+          downloadingWindow.webContents.send('connect:XDCC', dataProgress);
         });
 
         for (var i = 0; i < result.optimizedBots.length; i++) {
