@@ -420,22 +420,24 @@ ipcMain.on('start:downloads', (e, queue) => {
     var containerTasks = [];
     var allTasks = [];
 
+    var user = 'desu' + Math.random().toString(36).substr(7, 3);
+
     var ircXdcc = require('irc-xdcc')
     // set options object
       , ircOptions = {
-            userName: 'ircClient'
-          , realName: 'irc Client'
+            userName: 'user'
+          , realName: 'user'
           , port: 6697
           , autoRejoin: true
           , autoConnect: true
-          , channels: [ '#HorribleSubs', '#Exiled-Destiny', '#Anime-Koi', '#commie-subs', '#doki', '#evetaku', '#FFFpeeps', '#UNDERWATER', '#UTW', '#vivid', '#WhyNot?', '#KickAssAnime']
+          , channels: [ '#HorribleSubs', '#Exiled-Destiny', '#mdcx', '#commie-subs', '#doki', '#evetaku', '#UTW', '#vivid' ]
           , secure: true
           , selfSigned: true
           , certExpired: true
           , stripColors: true
           , encoding: 'UTF-8'
           // xdcc specific options
-          , progressInterval: 3
+          , progressInterval: 1
           , destPath: folderPath
           , resume: false
           , acceptUnpooled: true
@@ -445,7 +447,7 @@ ipcMain.on('start:downloads', (e, queue) => {
       , botInstance
       ;
 
-    ircXdcc('irc.rizon.net', 'myBotNick', ircOptions)
+    ircXdcc('irc.rizon.net', user, ircOptions)
       .then(function(instance) {
         // a way would be to make botInstance1, botInstance2, botInstance3, botInstance4, etc
         // measure the array of calls you get
@@ -490,6 +492,19 @@ ipcMain.on('start:downloads', (e, queue) => {
           downloadingWindow.webContents.send('connect:XDCC', dataProgress);
         });
 
+        botInstance.xdcc({ botNick: 'KareRaisu', packId: '13100'})
+        .then(function(xdccInstance) {
+          console.log("this is bot instance", xdccInstance);
+        })
+        .catch(function(err) {
+            if(err.code) {
+                console.error('Error ' + err.code + ': ' +  err.message);
+            }
+            else {
+                console.error(JSON.Stringify(err));
+            }
+        });
+
         for (var i = 0; i < result.optimizedBots.length; i++) {
           for (var j = 0; j < result.optimizedBots[i].length; j++) {
             var singleBot = result.optimizedBots[i][j];
@@ -509,6 +524,8 @@ ipcMain.on('start:downloads', (e, queue) => {
           containerTasks = [];
         }
 
+        // goes through all of them and forms a pair of the bot instance
+
         console.log("this is allTasks", allTasks);
 
         var allParallel = [];
@@ -521,8 +538,9 @@ ipcMain.on('start:downloads', (e, queue) => {
           allParallel.push(singleParallel);
         }
 
-        // unused
-        async.parallel(test1, function(err, results) {
+        // console.log("this is all parallel", allParallel)
+
+        async.parallel(allParallel, function(err, results) {
           console.log("this is the tasks parallel");
           console.log("these are the results in tasks parallel", results);
         });
