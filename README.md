@@ -9,7 +9,7 @@ use at your own risk. illegal file sharing is not condoned!!! this project was c
 
 demo picture here https://imgur.com/a/B75Yl
 
-created with electron, download prototype here and start MyApp https://drive.google.com/file/d/1Gu2ib198i3i3jBvWQvlU7yB5HyRsXkIy/view?usp=sharing
+created with electron, download prototype here https://drive.google.com/file/d/1jhLsQbRCLc-yb_KQb-ut10IRVFGihcYD/view?usp=sharing and start MyApp 
 
 electron-react-redux-boilerplate fork tailored to personal preference
 

@@ -120,6 +120,10 @@ app.on('ready', async () => {
       mainWindow.on('closed', () => {
         mainWindow = null;
       });
+
+      mainWindow.on('window-all-closed', () => {
+        app.quit();
+      })
     }
   });
 
@@ -492,18 +496,20 @@ ipcMain.on('start:downloads', (e, queue) => {
           downloadingWindow.webContents.send('connect:XDCC', dataProgress);
         });
 
-        botInstance.xdcc({ botNick: 'KareRaisu', packId: '13100'})
-        .then(function(xdccInstance) {
-          console.log("this is bot instance", xdccInstance);
-        })
-        .catch(function(err) {
-            if(err.code) {
-                console.error('Error ' + err.code + ': ' +  err.message);
-            }
-            else {
-                console.error(JSON.Stringify(err));
-            }
-        });
+        // the botinstance below had a properly formatted name
+
+        // botInstance.xdcc({ botNick: 'KareRaisu', packId: '13100'})
+        // .then(function(xdccInstance) {
+        //   console.log("this is bot instance", xdccInstance);
+        // })
+        // .catch(function(err) {
+        //     if(err.code) {
+        //         console.error('Error ' + err.code + ': ' +  err.message);
+        //     }
+        //     else {
+        //         console.error(JSON.Stringify(err));
+        //     }
+        // });
 
         for (var i = 0; i < result.optimizedBots.length; i++) {
           for (var j = 0; j < result.optimizedBots[i].length; j++) {
