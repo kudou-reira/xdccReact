@@ -15,7 +15,8 @@ class SuggestionResults extends Component {
 		this.state = {
 			searchSuggestions: [],
 			botSearch: [],
-			open: false
+			open: false,
+      newSuggest: false
 		}
 
 		this.handleNestedListToggle = this.handleNestedListToggle.bind(this);
@@ -23,6 +24,19 @@ class SuggestionResults extends Component {
 		this.addButtonClicked = this.addButtonClicked.bind(this);
 		this.searchButtonClicked = this.searchButtonClicked.bind(this);
 	}
+
+  // componentWillReceiveProps(nextProps) {
+  //   if(nextProps.suggestions !== null) {
+  //     if(this.props.suggestions !== nextProps.suggestions) {
+  //       // add listitems into the renderlist suggestion stuff down below
+  //       if(this.props.suggestions.tempSearches !== null) {
+  //         this.setState({ newSuggest: true })
+  //       }
+  //     } else {
+  //       this.setState({ newSuggest: false });
+  //     }
+  //   }
+  // }
 
 	handleNestedListToggle(item) {
     this.setState({
@@ -191,18 +205,23 @@ class SuggestionResults extends Component {
   	var validQuery = false;
   	var validSuggest;
 
-		if(this.props.suggestions !== null) {
+    // suggestions exists already, that's why there is no rerender
+    // check that current suggestions are different from new suggestions
+
+		if(this.props.suggestions !== null && !this.state.newSuggest) {
   		// add listitems into the renderlist suggestion stuff down below
-  		if(this.props.suggestions.tempSearches !== null) {
-  			validSuggest = this.props.suggestions.tempSearches.map((singleEpisode) => {
-  				if (singleEpisode.Compilation !== null) {
-  					validQuery = true
-  				}
-  			});
+
+      if(this.props.suggestions.tempSearches !== null) {
+    			validSuggest = this.props.suggestions.tempSearches.map((singleEpisode) => {
+    				if (singleEpisode.Compilation !== null) {
+              this.props.stopLoad();
+    					validQuery = true;
+    				}
+    			});
   		}
 
 	  	else {
-				validQuery = false
+				validQuery = false;
 	  	}
   	}
 
@@ -215,7 +234,7 @@ class SuggestionResults extends Component {
   		);
   	}
 
-  	else if (validQuery === false && this.props.currentQuery.length >= 3) {
+  	else if (validQuery === false && this.props.searched) {
   		return(
   			<div className="center">
   				<div>

@@ -51,6 +51,7 @@ class AnimeChartPanel extends Component {
 		console.log("this is continuingSeason", this.state.continuingSeason);
 		console.log("this is continuingDate", this.state.continuingDate);
 		console.log("this is startDate", this.state.startDate);
+		console.log("this is current season", this.state.season);
 		this.props.fetchAnime(this.state.season.toUpperCase(), this.state.startDate);
 		console.log("this is the continuing season", this.state.continuingSeason);
 		console.log("this is the continuing date", this.state.continuingDate);
@@ -617,22 +618,28 @@ addButtonClicked() {
 	findCurrentSeason() {
 		var nowMonth = moment().month();
 		console.log("this is now month", nowMonth);
+		var season = '';
 
-		if (0 <= nowMonth <= 2) {
-			return 'winter';
+		if (0 <= nowMonth && nowMonth <= 2) {
+			season = 'winter';
 		}
 
-		else if(3 <= nowMonth <= 5) {
-			return 'spring';
+		else if(3 <= nowMonth && nowMonth <= 5) {
+			season = 'spring';
 		}
 
-		else if(6 <= nowMonth <= 8) {
-			return 'summer';
+		else if(6 <= nowMonth && nowMonth <= 8) {
+			season = 'summer';
 		}
 
-		else if(9 <= nowMonth <= 11) {
-			return 'fall';
+		else if(9 <= nowMonth && nowMonth <= 11) {
+			season = 'fall';
+			return 'fall';		
 		}
+
+		console.log("this is find current season", season);
+
+		return season;
 	}
 
 	findCurrentDate(formatType) {
